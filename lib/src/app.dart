@@ -1,4 +1,5 @@
 import 'package:cbt_flutter/core/di/sl.dart';
+import 'package:cbt_flutter/core/router.dart';
 import 'package:cbt_flutter/src/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,7 @@ class App extends StatelessWidget {
       child: BlocSelector<SettingsCubit, SettingsState, ThemeMode>(
         selector: (state) => state.themeMode,
         builder: (context, themeMode) {
-          return MaterialApp(
+          return MaterialApp.router(
             // Providing a restorationScopeId allows the Navigator built by the
             // MaterialApp to restore the navigation stack when a user leaves and
             // returns to the app after it has been killed while running in the
@@ -48,32 +49,10 @@ class App extends StatelessWidget {
             // directory.
             onGenerateTitle: (BuildContext context) =>
                 AppLocalizations.of(context)!.appTitle,
-
-            // Define a light and dark color theme. Then, read the user's
-            // preferred ThemeMode (light, dark, or system default) from the
-            // SettingsController to display the correct theme.
             theme: ThemeData(),
             darkTheme: ThemeData.dark(),
             themeMode: themeMode,
-
-            // Define a function to handle named routes in order to support
-            // Flutter web url navigation and deep linking.
-            onGenerateRoute: (RouteSettings routeSettings) {
-              return MaterialPageRoute<void>(
-                settings: routeSettings,
-                builder: (BuildContext context) {
-                  switch (routeSettings.name) {
-                    case SettingsView.routeName:
-                      return const SettingsView();
-                    case SampleItemDetailsView.routeName:
-                      return const SampleItemDetailsView();
-                    case SampleItemListView.routeName:
-                    default:
-                      return const SampleItemListView();
-                  }
-                },
-              );
-            },
+            routerConfig: AppRouter.config,
           );
         },
       ),
