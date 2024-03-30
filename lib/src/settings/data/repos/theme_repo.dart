@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
 @singleton
-class ThemeRepoImpl {
-  ThemeRepoImpl({required this.settingsPrefs});
+class ThemeRepo {
+  ThemeRepo({required this.settingsPrefs});
 
   final SettingsPrefs settingsPrefs;
 

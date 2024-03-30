@@ -1,4 +1,4 @@
-import 'package:cbt_flutter/src/settings/data/repos/theme_repo_impl.dart';
+import 'package:cbt_flutter/src/settings/data/repos/theme_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 class GetThemeMode {
 
   GetThemeMode(this._repo);
-  final ThemeRepoImpl _repo;
+  final ThemeRepo _repo;
 
   ThemeMode call() => _repo.getThemeMode();
 }
