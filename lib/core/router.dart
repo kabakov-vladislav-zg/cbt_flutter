@@ -1,3 +1,4 @@
+import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_page.dart';
 import 'package:cbt_flutter/src/diary_overview/presentation/views/diary_overview_page.dart';
 import 'package:cbt_flutter/src/settings/presentation/views/settings_view.dart';
@@ -13,11 +14,13 @@ class AppRouter {
         builder: (context, state) => const DiaryOverviewPage(),
         routes: [
           GoRoute(
-            path: ':noteId',
+            path: ':step',
             name: DiaryEditPage.routeName,
             builder: (context, state) {
-              final String noteId = state.pathParameters['noteId']!;
-              return DiaryEditPage(noteId: noteId);
+              final step = DiaryEditSteps.values.firstWhere((DiaryEditSteps step) => step.name == state.pathParameters['step']!);
+              final note = state.extra as DiaryNote;
+              print('state.pageKey ${state.pageKey}');
+              return DiaryEditPage(key: state.pageKey, note: note, step: step);
             },
           ),
         ],

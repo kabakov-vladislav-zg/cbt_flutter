@@ -31,19 +31,23 @@ class DiaryNote extends Equatable {
 
   final bool isCompleted;
 
-  // DiaryNote copyWith({
-  //   String? id,
-  //   String? title,
-  //   String? description,
-  //   bool? isCompleted,
-  // }) {
-  //   return DiaryNote(
-  //     id: id ?? this.id,
-  //     title: title ?? this.title,
-  //     description: description ?? this.description,
-  //     isCompleted: isCompleted ?? this.isCompleted,
-  //   );
-  // }
+  DiaryNote copyWith({
+    String? id,
+    String? event,
+    List<Thought>? thoughts,
+    List<Emotion>? emotions,
+    bool? isCreated,
+    bool? isCompleted,
+  }) {
+    return DiaryNote(
+      id: id ?? this.id,
+      event: event ?? this.event,
+      thoughts: thoughts ?? this.thoughts,
+      emotions: emotions ?? this.emotions,
+      isCreated: isCreated ?? this.isCreated,
+      isCompleted: isCompleted ?? this.isCompleted,
+    );
+  }
 
   static DiaryNote fromJson(JsonMap json) => _$DiaryNoteFromJson(json);
 

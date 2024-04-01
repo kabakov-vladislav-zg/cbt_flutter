@@ -30,7 +30,7 @@ class DiaryOverviewPage extends StatelessWidget {
                     foregroundImage: AssetImage('assets/images/flutter_logo.png'),
                   ),
                   onTap: () {
-                    context.pushNamed(DiaryEditPage.routeName, pathParameters: { 'noteId': '1' });
+                    context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': 'event' }, extra: item);
                   }
                 );
               },
