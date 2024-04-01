@@ -23,6 +23,20 @@ class Thought extends Equatable {
   
   final String corruption;
 
+  Thought copyWith({
+    String? description,
+    List<String>? intermediate,
+    String? conclusion,
+    String? corruption,
+  }) {
+    return Thought(
+      description: description ?? this.description,
+      intermediate: intermediate ?? this.intermediate,
+      conclusion: conclusion ?? this.conclusion,
+      corruption: corruption ?? this.corruption,
+    );
+  }
+
   static Thought fromJson(JsonMap json) => _$ThoughtFromJson(json);
 
   JsonMap toJson() => _$ThoughtToJson(this);

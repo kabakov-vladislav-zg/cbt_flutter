@@ -2,6 +2,7 @@ import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_event.dart';
+import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_thoughts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -58,8 +59,8 @@ class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateM
           controller: _controller,
           children: const [
             DiaryEditEvent(),
-            DiaryEditEvent(),
-            DiaryEditEvent(),
+            DiaryEditThoughts(),
+            DiaryEditThoughts(),
           ]
         ),
       ),

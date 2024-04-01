@@ -23,6 +23,9 @@ dependencies:
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
   meta: ^1.10.0
+  gap: ^3.0.1
+  collection: ^1.18.0
+  control_style: ^0.1.0
 
 dev_dependencies:
   flutter_test:
