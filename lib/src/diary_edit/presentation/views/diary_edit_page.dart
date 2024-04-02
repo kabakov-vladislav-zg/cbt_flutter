@@ -44,6 +44,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateM
   }
 
   _changed() {
+    FocusScope.of(context).unfocus();
     final step = DiaryEditSteps.values[_controller.index].name;
     context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': step }, extra: widget.note);
   }

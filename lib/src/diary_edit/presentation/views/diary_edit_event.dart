@@ -22,6 +22,7 @@ class _DiaryEditEventState extends State<DiaryEditEvent> {
     _controller.addListener(_changed);
   }
 
+
   @override
   void dispose() {
     _controller.removeListener(_changed);
@@ -41,7 +42,32 @@ class _DiaryEditEventState extends State<DiaryEditEvent> {
       listener: (context, state) {
         _controller.text = state.event;
       },
-      child: TextField(controller: _controller),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: TextField(
+                controller: _controller,
+                keyboardType: TextInputType.text,
+                maxLines: null,
+                expands: true,
+                decoration: InputDecoration(
+                  isCollapsed: true,
+                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  hintText: 'Опишите произошедшее событие',
+                  hintStyle: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    color: Colors.grey.shade400
+                  )
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
