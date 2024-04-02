@@ -1,11 +1,12 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
 import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
-import 'package:cbt_flutter/core/utils/list_emotions.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
+import 'package:cbt_flutter/src/diary_edit/presentation/widgets/picker_emotion.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class DiaryEditEmotions extends StatefulWidget {
   const DiaryEditEmotions({super.key});
@@ -20,22 +21,27 @@ class _DiaryEditEmotionsState extends State<DiaryEditEmotions> {
     return BlocSelector<DiaryEditCubit, DiaryNote, List<Emotion>>(
       selector: (state) => state.emotions,
       builder: (context, emotions) {
-        return CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              sliver: SliverList(
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: CustomScrollView(
+            slivers: [
+              SliverList(
                 delegate: SliverChildListDelegate([
-                  ...emotions.mapIndexed((index, emotion) => Spacer()),
-                  Btn(
+                  ...emotions.mapIndexed((index, emotion) => EditEmotion(index: index, emotion: emotion)),
+                ]),
+              ),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 60,
+                  child: Btn(
                     onPressed: () => _dialogBuilder(context),
                     text: 'добавить',
                     block: true,
-                  )
-                ]),
+                  ),
+                ),
               )
-            ),
-          ]
+            ]
+          ),
         );
       },
     );
@@ -43,120 +49,82 @@ class _DiaryEditEmotionsState extends State<DiaryEditEmotions> {
 }
 
 Future<void> _dialogBuilder(BuildContext context) {
+  final cubit = context.read<DiaryEditCubit>();
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
-      return Dialog.fullscreen(
-        child: CustomScrollView(
-          slivers: [
-            const SliverAppBar(
-              floating: true,
-              title: Text('Эмоции'),
-            ),
-            SliverGrid(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200.0,
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-                childAspectRatio: 4.0,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return Container(
-                    alignment: Alignment.center,
-                    color: listEmotions[index].color,
-                    child: Text(listEmotions[index].name),
-                  );
-                },
-                childCount: listEmotions.length,
-              ),
-            ),
-            for (final section in listEmotions)
-              SliverMainAxisGroup(
-                slivers: [
-                  SliverAppBar(
-                    pinned: true,
-                    automaticallyImplyLeading: false,
-                    title: Text(section.name),
-                  ),
-                  SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200.0,
-                      mainAxisSpacing: 10.0,
-                      crossAxisSpacing: 10.0,
-                      childAspectRatio: 4.0,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return Container(
-                          alignment: Alignment.center,
-                          color: section.color,
-                          child: Text(section.list[index]),
-                        );
-                      },
-                      childCount: section.list.length,
-                    ),
-                  ),
-                ]
-              ),
-          ]
-        )
+      return PickerEmotion(
+        callback: (String name) {
+          context.pop();
+          cubit.setEmotion(null, emotion: Emotion(name: name));
+        },
       );
     }
   );
 }
 
-// class EditEmotion extends StatefulWidget {
-//   const EditEmotion({
-//     super.key,
-//     required this.emotion,
-//     required this.index,
-//   });
+class EditEmotion extends StatefulWidget {
+  const EditEmotion({
+    super.key,
+    required this.emotion,
+    required this.index,
+  });
 
-//   final Emotion emotion;
-//   final int index;
+  final Emotion emotion;
+  final int index;
 
-//   @override
-//   State<EditEmotion> createState() => _EditEmotionState();
-// }
+  @override
+  State<EditEmotion> createState() => _EditEmotionState();
+}
 
-// class _EditEmotionState extends State<EditEmotion> {
-//   late final TextEditingController _controller;
-//   late final _index = widget.index;
-//   late final _emotion = widget.emotion;
+class _EditEmotionState extends State<EditEmotion> {
+  late final _index = widget.index;
+  late Emotion _emotion = widget.emotion;
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     final text = _thought.description; 
-//     _controller = TextEditingController(text: text);
-//     _controller.addListener(_changed);
-//   }
-
-//   @override
-//   void dispose() {
-//     _controller.removeListener(_changed);
-//     super.dispose();
-//   }
-
-//   _changed() {
-//     final text = _controller.text;
-//     final thought = _thought.copyWith(description: text);
-//     context.read<DiaryEditCubit>().setThought(_index, thought: thought);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocListener<DiaryEditCubit, DiaryNote>(
-//       listenWhen: (oldState, state) {
-//         final previous = oldState.thoughts[_index].description;
-//         final current = state.thoughts[_index].description;
-//         return previous != current && current != _controller.text;
-//       },
-//       listener: (context, state) {
-//         _controller.text = state.thoughts[_index].description;
-//       },
-//       child: TextField(controller: _controller),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<DiaryEditCubit, DiaryNote>(
+      listenWhen: (oldState, state) {
+        final previous = oldState.emotions[_index];
+        final current = state.emotions[_index];
+        return previous != current;
+      },
+      listener: (context, state) {
+        _emotion = state.emotions[_index];
+      },
+      child: Padding(
+        padding: const EdgeInsetsDirectional.only(bottom: 16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                blurRadius: 4,
+              )
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(_emotion.name),
+              Slider(
+                label: _emotion.intensityFirst.toString(),
+                value: _emotion.intensityFirst.toDouble(),
+                divisions: 10,
+                min: 0,
+                max: 10,
+                onChanged: (value) {
+                  final emotion = _emotion.copyWith(intensityFirst: value.toInt());
+                  context.read<DiaryEditCubit>().setEmotion(_index, emotion: emotion);
+                }
+              )
+            ]
+          ),
+        ),
+      ),
+    );
+  }
+}

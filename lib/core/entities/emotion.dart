@@ -12,12 +12,25 @@ class Emotion extends Equatable {
     required this.name,
     this.intensityFirst = 0,
     int? intensitySecond,
-  })  : intensitySecond = intensitySecond ?? intensityFirst;
+  }) : intensitySecond = intensitySecond ?? intensityFirst;
+
   final String name;
 
   final int intensityFirst;
 
   final int intensitySecond;
+
+  Emotion copyWith({
+    String? name,
+    int? intensityFirst,
+    int? intensitySecond,
+  }) {
+    return Emotion(
+      name: name ?? this.name,
+      intensityFirst: intensityFirst ?? this.intensityFirst,
+      intensitySecond: intensitySecond ?? this.intensitySecond,
+    );
+  }
 
   static Emotion fromJson(JsonMap json) => _$EmotionFromJson(json);
 
