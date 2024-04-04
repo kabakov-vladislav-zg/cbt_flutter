@@ -24,7 +24,6 @@ class _EditThoughtState extends State<EditThought> {
   final GlobalKey _fieldKey = GlobalKey<State<TextField>>();
   late final _index = widget.index;
   late final _thought = widget.thought;
-  int _maxLines = 3;
 
   @override
   void initState() {
@@ -45,30 +44,9 @@ class _EditThoughtState extends State<EditThought> {
 
   _onChange() {
     final text = _textController.text;
-    updateDisplayedLineCount();
     final thought = _thought.copyWith(description: text);
     final cubit = context.read<DiaryEditCubit>();
     cubit.setThought(_index, thought: thought);
-  }
-
-  Size getRedBoxSize(BuildContext context) {
-    final box = context.findRenderObject() as RenderBox;
-    return box.size;
-  }
-
-  void updateDisplayedLineCount() {
-    final text = _textController.text;
-    final textPainter = TextPainter(
-      text: TextSpan(text: text, style: const TextStyle(fontSize: 16)),
-      textDirection: TextDirection.ltr,
-      maxLines: null,
-    );
-    final size = getRedBoxSize(_fieldKey.currentContext!);
-    textPainter.layout(maxWidth: size.width);
-    final metrics = textPainter.computeLineMetrics();
-    setState(() {
-      _maxLines = metrics.length > _maxLines ? metrics.length : _maxLines;
-    });
   }
 
   _remove() {
@@ -92,19 +70,20 @@ class _EditThoughtState extends State<EditThought> {
         ],
       ),
       child: TextField(
+        style: const TextStyle(letterSpacing: 1,  wordSpacing: 1, fontSize: 16),
         key: _fieldKey,
         controller: _textController,
         focusNode: _focusNode,
         keyboardType: TextInputType.text,
-        maxLines: _maxLines,
+        maxLines: null,
         onEditingComplete: widget.onEditingComplete,
         decoration: InputDecoration(
+          suffix: GestureDetector(
+            onTap: _remove,
+            child: const Icon(Icons.clear),
+          ),
           enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
           focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-          // suffixIcon: GestureDetector(
-          //   onTap: _remove,
-          //   child: const Icon(Icons.clear),
-          // ),
         ),
       ),
     );
