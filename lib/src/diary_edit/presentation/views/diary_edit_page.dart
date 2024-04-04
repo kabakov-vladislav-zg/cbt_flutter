@@ -24,29 +24,36 @@ class DiaryEditPage extends StatefulWidget {
 }
 
 class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateMixin {
-  late final TabController _controller;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _controller = TabController(
+    _tabController = TabController(
       length: DiaryEditSteps.values.length,
       vsync: this,
       initialIndex: widget.step.index,
     );
-    _controller.addListener(_changed);
+    _tabController.addListener(_changed);
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_changed);
+    _tabController.removeListener(_changed);
+    _tabController.dispose();
     super.dispose();
   }
 
-  _changed() {
-    FocusScope.of(context).unfocus();
-    final step = DiaryEditSteps.values[_controller.index].name;
+  void _changed() {
+    print('_changed');
+    FocusScope.of(context).requestFocus(FocusNode());
+    final step = DiaryEditSteps.values[_tabController.index].name;
     context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': step }, extra: widget.note);
+  }
+  void _next() {
+    int index = _tabController.index + 1;
+    if (index >= _tabController.length) index = 0;
+    _tabController.index = index;
   }
 
   @override
@@ -57,12 +64,15 @@ class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateM
         appBar: AppBar(
           title: Text('Шаг ${widget.step.name}'),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _next,
+        ),
         body: TabBarView(
-          controller: _controller,
-          children: const [
-            DiaryEditEvent(),
-            DiaryEditThoughts(),
-            DiaryEditEmotions(),
+          controller: _tabController,
+          children: [
+            DiaryEditEvent(onEditingComplete: _next,),
+            const DiaryEditThoughts(),
+            const DiaryEditEmotions(),
           ]
         ),
       ),

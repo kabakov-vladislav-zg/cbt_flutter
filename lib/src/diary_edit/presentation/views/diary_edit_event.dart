@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DiaryEditEvent extends StatefulWidget {
-  const DiaryEditEvent({super.key});
+  const DiaryEditEvent({super.key, this.onEditingComplete});
+
+  final VoidCallback? onEditingComplete;
 
   @override
   State<DiaryEditEvent> createState() => _DiaryEditEventState();
@@ -17,7 +19,7 @@ class _DiaryEditEventState extends State<DiaryEditEvent> {
   void initState() {
     super.initState();
     final bloc = BlocProvider.of<DiaryEditCubit>(context); 
-    final text = bloc.state.event; 
+    final text = bloc.state.event;
     _controller = TextEditingController(text: text);
     _controller.addListener(_changed);
   }
@@ -29,7 +31,7 @@ class _DiaryEditEventState extends State<DiaryEditEvent> {
     super.dispose();
   }
 
-  _changed() {
+  void _changed() {
     context.read<DiaryEditCubit>().setEvent(_controller.text);
   }
 
@@ -50,6 +52,7 @@ class _DiaryEditEventState extends State<DiaryEditEvent> {
               hasScrollBody: false,
               child: TextField(
                 controller: _controller,
+                onEditingComplete: widget.onEditingComplete,
                 keyboardType: TextInputType.text,
                 maxLines: null,
                 expands: true,
