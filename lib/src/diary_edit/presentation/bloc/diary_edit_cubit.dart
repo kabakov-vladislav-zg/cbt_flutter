@@ -13,7 +13,7 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
   void setEvent(String text) {
     emit(state.copyWith(event: text));
   }
-  void setThought(int? index, {required Thought thought}) {
+  void setThought(int? index, { required Thought thought }) {
     final thoughts = [...state.thoughts];
     if (index != null) {
       thoughts[index] = thought;
@@ -22,6 +22,14 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
     }
     emit(state.copyWith(thoughts: thoughts));
   }
+
+  void removeThought(int index) {
+    final thoughts = [...state.thoughts];
+    thoughts.removeAt(index);
+    print('removeThought $thoughts');
+    emit(state.copyWith(thoughts: thoughts));
+  }
+
   void setEmotion(int? index, {required Emotion emotion}) {
     final emotions = [...state.emotions];
     if (index != null) {
