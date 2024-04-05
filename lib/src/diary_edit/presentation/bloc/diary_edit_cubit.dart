@@ -11,7 +11,7 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
   : super(note);
 
   void setEvent(String text) {
-    emit(state.copyWith(event: text));
+    emit(state.copyWith(trigger: text));
   }
   void setThought(int? index, { required Thought thought }) {
     final thoughts = [...state.thoughts];

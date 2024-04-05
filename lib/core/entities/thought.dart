@@ -49,5 +49,5 @@ class Thought extends Equatable {
   JsonMap toJson() => _$ThoughtToJson(this);
 
   @override
-  List<Object> get props => [description, intermediate, conclusion];
+  List<Object> get props => [description, intermediate, conclusion, uuid];
 }

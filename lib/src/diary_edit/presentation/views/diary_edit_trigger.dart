@@ -3,23 +3,23 @@ import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DiaryEditEvent extends StatefulWidget {
-  const DiaryEditEvent({super.key, this.onEditingComplete});
+class DiaryEditTrigger extends StatefulWidget {
+  const DiaryEditTrigger({super.key, this.onEditingComplete});
 
   final VoidCallback? onEditingComplete;
 
   @override
-  State<DiaryEditEvent> createState() => _DiaryEditEventState();
+  State<DiaryEditTrigger> createState() => _DiaryEditTriggerState();
 }
 
-class _DiaryEditEventState extends State<DiaryEditEvent> {
+class _DiaryEditTriggerState extends State<DiaryEditTrigger> {
   late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     final bloc = BlocProvider.of<DiaryEditCubit>(context); 
-    final text = bloc.state.event;
+    final text = bloc.state.trigger;
     _controller = TextEditingController(text: text);
     _controller.addListener(_changed);
   }
@@ -39,10 +39,10 @@ class _DiaryEditEventState extends State<DiaryEditEvent> {
   Widget build(BuildContext context) {
     return BlocListener<DiaryEditCubit, DiaryNote>(
       listenWhen: (previous, current) =>
-          previous.event != current.event &&
-          current.event != _controller.text,
+          previous.trigger != current.trigger &&
+          current.trigger != _controller.text,
       listener: (context, state) {
-        _controller.text = state.event;
+        _controller.text = state.trigger;
       },
       child: Padding(
         padding: const EdgeInsets.all(16),

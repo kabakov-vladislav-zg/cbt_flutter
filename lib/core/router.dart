@@ -19,7 +19,6 @@ class AppRouter {
             builder: (context, state) {
               final step = DiaryEditSteps.values.firstWhere((DiaryEditSteps step) => step.name == state.pathParameters['step']!);
               final note = state.extra as DiaryNote;
-              print('state.pageKey ${state.pageKey}');
               return DiaryEditPage(key: state.pageKey, note: note, step: step);
             },
           ),

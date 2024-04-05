@@ -25,7 +25,7 @@ class DiaryOverviewPage extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 final item = list[index];
                 return ListTile(
-                  title: Text(item.event),
+                  title: Text(item.trigger),
                   leading: const CircleAvatar(
                     foregroundImage: AssetImage('assets/images/flutter_logo.png'),
                   ),

@@ -2,7 +2,7 @@ import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_emotions.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_event.dart';
+import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_trigger.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_thoughts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,7 +45,6 @@ class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateM
   }
 
   void _changed() {
-    print('_changed');
     FocusScope.of(context).requestFocus(FocusNode());
     final step = DiaryEditSteps.values[_tabController.index].name;
     context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': step }, extra: widget.note);
@@ -70,7 +69,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateM
         body: TabBarView(
           controller: _tabController,
           children: [
-            DiaryEditEvent(onEditingComplete: _next,),
+            DiaryEditTrigger(onEditingComplete: _next,),
             const DiaryEditThoughts(),
             const DiaryEditEmotions(),
           ]
