@@ -4,6 +4,7 @@ import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.da
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_emotions.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_trigger.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_thoughts.dart';
+import 'package:cbt_flutter/src/diary_overview/presentation/views/diary_overview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -51,8 +52,11 @@ class _DiaryEditPageState extends State<DiaryEditPage> with TickerProviderStateM
   }
   void _next() {
     int index = _tabController.index + 1;
-    if (index >= _tabController.length) index = 0;
-    _tabController.index = index;
+    if (index >= _tabController.length) {
+      context.goNamed(DiaryOverviewPage.routeName);
+    } else {
+      _tabController.index = index;
+    }
   }
 
   @override

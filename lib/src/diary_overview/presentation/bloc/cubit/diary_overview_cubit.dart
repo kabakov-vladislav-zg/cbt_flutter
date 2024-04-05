@@ -1,4 +1,5 @@
 import 'package:cbt_flutter/core/entities/diary_note.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,7 @@ class DiaryOverviewCubit extends Cubit<DiaryOverviewState> {
     final list = [...state.list];
     final note = DiaryNote();
     list.add(note);
-    emit(DiaryOverviewState(list: list));
+    emit(state.copyWith(list: list));
     return note;
   }
 
