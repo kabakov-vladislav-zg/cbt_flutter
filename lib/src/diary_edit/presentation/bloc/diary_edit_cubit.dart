@@ -26,7 +26,12 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
   void removeThought(int index) {
     final thoughts = [...state.thoughts];
     thoughts.removeAt(index);
-    print('removeThought $thoughts');
+    emit(state.copyWith(thoughts: thoughts));
+  }
+
+  void removeEmptyFields() {
+    final thoughts = [...state.thoughts];
+    thoughts.removeWhere((Thought thought) => thought.description.trim().isEmpty);
     emit(state.copyWith(thoughts: thoughts));
   }
 
