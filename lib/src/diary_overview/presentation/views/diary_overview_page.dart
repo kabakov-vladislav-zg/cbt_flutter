@@ -1,7 +1,7 @@
 import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_page.dart';
-import 'package:cbt_flutter/src/diary_overview/presentation/bloc/cubit/diary_overview_cubit.dart';
+import 'package:cbt_flutter/src/diary_overview/presentation/bloc/diary_overview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +14,8 @@ class DiaryOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt.get<DiaryOverviewCubit>(),
+      create: (context) => getIt.get<DiaryOverviewCubit>()
+      ..add(const DiaryOverviewSubscriptionRequested()),
       child: const DiaryOverview(),
     );
   }
@@ -28,7 +29,8 @@ class DiaryOverview extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final note = context.read<DiaryOverviewCubit>().addNote();
+          final note = DiaryNote();
+          context.read<DiaryOverviewCubit>().add(DiaryOverviewAddCbtNote(note));
           context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': 'trigger' }, extra: note);
         },
       ),

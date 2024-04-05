@@ -1,4 +1,4 @@
-part of 'diary_overview_cubit.dart';
+part of 'diary_overview_bloc.dart';
 
 @immutable
 class DiaryOverviewState extends Equatable {

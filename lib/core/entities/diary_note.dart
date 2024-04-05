@@ -1,15 +1,10 @@
 import 'package:cbt_flutter/core/entities/emotion.dart';
-import 'package:cbt_flutter/core/entities/json_map.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
-part 'diary_note.g.dart';
-
 @immutable
-@JsonSerializable()
 class DiaryNote extends Equatable {
   DiaryNote({
     this.trigger = '',
@@ -60,10 +55,6 @@ class DiaryNote extends Equatable {
       timestamp: _timestamp,
     );
   }
-
-  static DiaryNote fromJson(JsonMap json) => _$DiaryNoteFromJson(json);
-
-  JsonMap toJson() => _$DiaryNoteToJson(this);
 
   @override
   List<Object> get props => [trigger, thoughts, emotions, isCreated, isCompleted, uuid, timestamp];
