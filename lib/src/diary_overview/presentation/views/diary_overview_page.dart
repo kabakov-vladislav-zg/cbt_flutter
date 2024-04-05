@@ -15,29 +15,44 @@ class DiaryOverviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt.get<DiaryOverviewCubit>(),
-      child: Scaffold(
-        body: BlocSelector<DiaryOverviewCubit, DiaryOverviewState, List<DiaryNote>>(
-          selector: (state) => state.list,
-          builder: (context, list) {
-            return ListView.builder(
-              restorationId: 'diaryOverviewPage',
-              itemCount: list.length,
-              itemBuilder: (BuildContext context, int index) {
-                final item = list[index];
-                return ListTile(
-                  title: Text(item.trigger),
-                  leading: const CircleAvatar(
-                    foregroundImage: AssetImage('assets/images/flutter_logo.png'),
-                  ),
-                  onTap: () {
-                    context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': 'event' }, extra: item);
-                  }
-                );
-              },
-            );
-          },
-        ),
-      )
+      child: const DiaryOverview(),
+    );
+  }
+}
+
+class DiaryOverview extends StatelessWidget {
+  const DiaryOverview({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final note = context.read<DiaryOverviewCubit>().addNote();
+          context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': 'trigger' }, extra: note);
+        },
+      ),
+      body: BlocSelector<DiaryOverviewCubit, DiaryOverviewState, List<DiaryNote>>(
+        selector: (state) => state.list,
+        builder: (context, list) {
+          return ListView.builder(
+            restorationId: 'diaryOverviewPage',
+            itemCount: list.length,
+            itemBuilder: (BuildContext context, int index) {
+              final item = list[index];
+              return ListTile(
+                title: Text(item.trigger),
+                leading: const CircleAvatar(
+                  foregroundImage: AssetImage('assets/images/flutter_logo.png'),
+                ),
+                onTap: () {
+                  context.goNamed(DiaryEditPage.routeName, pathParameters: { 'step': 'trigger' }, extra: item);
+                }
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

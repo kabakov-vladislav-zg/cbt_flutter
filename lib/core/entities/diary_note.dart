@@ -12,7 +12,6 @@ part 'diary_note.g.dart';
 @JsonSerializable()
 class DiaryNote extends Equatable {
   DiaryNote({
-    required this.id,
     this.trigger = '',
     this.thoughts = const [],
     this.emotions = const [],
@@ -24,7 +23,6 @@ class DiaryNote extends Equatable {
     _uuid = uuid ?? const Uuid().v1(),
     _timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
-  final String id;
 
   final String trigger;
 
@@ -53,7 +51,6 @@ class DiaryNote extends Equatable {
     bool? isCompleted,
   }) {
     return DiaryNote(
-      id: id ?? this.id,
       trigger: trigger ?? this.trigger,
       thoughts: thoughts ?? this.thoughts,
       emotions: emotions ?? this.emotions,
@@ -69,5 +66,5 @@ class DiaryNote extends Equatable {
   JsonMap toJson() => _$DiaryNoteToJson(this);
 
   @override
-  List<Object> get props => [id, trigger, thoughts, emotions, isCreated, isCompleted, uuid, timestamp];
+  List<Object> get props => [trigger, thoughts, emotions, isCreated, isCompleted, uuid, timestamp];
 }

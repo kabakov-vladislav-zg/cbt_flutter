@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-enum DiaryEditSteps { event, thoughts, emotions }
+enum DiaryEditSteps { trigger, thoughts, emotions }
 
 class DiaryEditPage extends StatefulWidget {
   const DiaryEditPage({super.key, required this.note, required this.step});
