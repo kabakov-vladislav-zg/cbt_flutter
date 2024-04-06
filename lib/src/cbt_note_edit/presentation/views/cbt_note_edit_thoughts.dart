@@ -1,5 +1,4 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
-import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +36,8 @@ class _CbtNoteEditThoughtsState extends State<CbtNoteEditThoughts> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<CbtNoteEditCubit, CbtNote, List<Thought>>(
-      selector: (state) => state.thoughts,
+    return BlocSelector<CbtNoteEditCubit, CbtNoteEditState, List<Thought>>(
+      selector: (state) => state.note.thoughts,
       builder: (context, thoughts) {
         return CustomScrollView(
           slivers: [

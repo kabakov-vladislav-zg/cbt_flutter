@@ -1,5 +1,4 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
-import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
 import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:cbt_flutter/src/cbt_note_edit/presentation/widgets/picker_emotion.dart';
@@ -18,8 +17,8 @@ class CbtNoteEditEmotions extends StatefulWidget {
 class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<CbtNoteEditCubit, CbtNote, List<Emotion>>(
-      selector: (state) => state.emotions,
+    return BlocSelector<CbtNoteEditCubit, CbtNoteEditState, List<Emotion>>(
+      selector: (state) => state.note.emotions,
       builder: (context, emotions) {
         return Padding(
           padding: const EdgeInsets.all(16),
@@ -83,14 +82,14 @@ class _EditEmotionState extends State<EditEmotion> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CbtNoteEditCubit, CbtNote>(
+    return BlocListener<CbtNoteEditCubit, CbtNoteEditState>(
       listenWhen: (oldState, state) {
-        final previous = oldState.emotions[_index];
-        final current = state.emotions[_index];
+        final previous = oldState.note.emotions[_index];
+        final current = state.note.emotions[_index];
         return previous != current;
       },
       listener: (context, state) {
-        _emotion = state.emotions[_index];
+        _emotion = state.note.emotions[_index];
       },
       child: Padding(
         padding: const EdgeInsetsDirectional.only(bottom: 16),

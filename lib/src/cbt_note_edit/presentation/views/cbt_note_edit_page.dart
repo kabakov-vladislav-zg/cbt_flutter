@@ -34,7 +34,7 @@ class CbtNoteEditPage extends StatefulWidget {
 
 class _CbtNoteEditPageState extends State<CbtNoteEditPage> with TickerProviderStateMixin {
   late final TabController _tabController;
-  late CbtNoteEditSteps _step;
+  int _index = 0;
 
   @override
   void initState() {
@@ -42,10 +42,9 @@ class _CbtNoteEditPageState extends State<CbtNoteEditPage> with TickerProviderSt
     _tabController = TabController(
       length: CbtNoteEditSteps.values.length,
       vsync: this,
-      initialIndex: 0,
+      initialIndex: _index,
     );
     _tabController.addListener(_changed);
-    _step = CbtNoteEditSteps.values[_tabController.index];
   }
 
   @override
@@ -58,7 +57,7 @@ class _CbtNoteEditPageState extends State<CbtNoteEditPage> with TickerProviderSt
   void _changed() {
     FocusScope.of(context).requestFocus(FocusNode());
     setState(() {
-      _step = CbtNoteEditSteps.values[_tabController.index];
+      _index = _tabController.index;
     });
   }
   void _next() {
@@ -76,15 +75,20 @@ class _CbtNoteEditPageState extends State<CbtNoteEditPage> with TickerProviderSt
       create: (context) => getIt.get<CbtNoteEditCubit>(param1: widget.cbtNote),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_step.title),
+          title: Text(CbtNoteEditSteps.values[_index].title),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: _next,
+          child: Icon(
+            _index + 1 >= CbtNoteEditSteps.values.length
+              ? Icons.check
+              : Icons.keyboard_arrow_right
+          ),
         ),
         body: TabBarView(
           controller: _tabController,
           children: [
-            CbtNoteEditTrigger(onEditingComplete: _next,),
+            CbtNoteEditTrigger(onEditingComplete: _next),
             const CbtNoteEditThoughts(),
             const CbtNoteEditEmotions(),
           ]

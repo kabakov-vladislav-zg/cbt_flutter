@@ -1,4 +1,3 @@
-import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,8 +17,8 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
   @override
   void initState() {
     super.initState();
-    final bloc = BlocProvider.of<CbtNoteEditCubit>(context); 
-    final text = bloc.state.trigger;
+    final cubit = context.read<CbtNoteEditCubit>(); 
+    final text = cubit.state.note.trigger;
     _controller = TextEditingController(text: text);
     _controller.addListener(_changed);
   }
@@ -32,17 +31,18 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
   }
 
   void _changed() {
-    context.read<CbtNoteEditCubit>().setEvent(_controller.text);
+    final cubit = context.read<CbtNoteEditCubit>();
+    cubit.setEvent(_controller.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CbtNoteEditCubit, CbtNote>(
+    return BlocListener<CbtNoteEditCubit, CbtNoteEditState>(
       listenWhen: (previous, current) =>
-          previous.trigger != current.trigger &&
-          current.trigger != _controller.text,
+          previous.note.trigger != current.note.trigger &&
+          current.note.trigger != _controller.text,
       listener: (context, state) {
-        _controller.text = state.trigger;
+        _controller.text = state.note.trigger;
       },
       child: Padding(
         padding: const EdgeInsets.all(16),
