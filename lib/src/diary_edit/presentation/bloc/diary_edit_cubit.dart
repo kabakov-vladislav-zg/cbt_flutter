@@ -1,7 +1,7 @@
 import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
-import 'package:cbt_flutter/core/usescases/set_diary_note.dart';
+import 'package:cbt_flutter/core/usescases/update_diary_note.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,16 +9,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class DiaryEditCubit extends Cubit<DiaryNote> {
   @factoryMethod
   DiaryEditCubit(@factoryParam DiaryNote note, {
-    required SetDiaryNote setDiaryNote,
+    required UpdateDiaryNote updateDiaryNote,
   }) :
-    _setDiaryNote = setDiaryNote,
+    _updateDiaryNote = updateDiaryNote,
     super(note);
     
-  final SetDiaryNote _setDiaryNote;
+  final UpdateDiaryNote _updateDiaryNote;
 
   void setEvent(String text) {
     emit(state.copyWith(trigger: text));
-    _setDiaryNote(state);
+    _updateDiaryNote(state);
   }
   void setThought(int? index, { required Thought thought }) {
     final thoughts = [...state.thoughts];
@@ -28,21 +28,21 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
       thoughts.add(thought);
     }
     emit(state.copyWith(thoughts: thoughts));
-    _setDiaryNote(state);
+    _updateDiaryNote(state);
   }
 
   void removeThought(int index) {
     final thoughts = [...state.thoughts];
     thoughts.removeAt(index);
     emit(state.copyWith(thoughts: thoughts));
-    _setDiaryNote(state);
+    _updateDiaryNote(state);
   }
 
   void removeEmptyFields() {
     final thoughts = [...state.thoughts];
     thoughts.removeWhere((Thought thought) => thought.description.trim().isEmpty);
     emit(state.copyWith(thoughts: thoughts));
-    _setDiaryNote(state);
+    _updateDiaryNote(state);
   }
 
   void setEmotion(int? index, {required Emotion emotion}) {
@@ -53,6 +53,6 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
       emotions.add(emotion);
     }
     emit(state.copyWith(emotions: emotions));
-    _setDiaryNote(state);
+    _updateDiaryNote(state);
   }
 }

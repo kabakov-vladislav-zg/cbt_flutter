@@ -10,48 +10,22 @@ class DiaryNoteApi {
 
   final Database db;
 
-  List<DiaryNote> _list = [];
+  late BehaviorSubject<List<DiaryNote>> _streamController;
 
-  final _streamController = BehaviorSubject<List<DiaryNote>>.seeded(const []);
-
-  Stream<List<DiaryNote>> getCbtNotes() => _streamController.asBroadcastStream();
-
-  Future<void> setDiaryNote(DiaryNote diaryNote) async {
-    await insertDiaryNote(diaryNote);
-    final dnlist = await diaryNotes();
-    print('setDiaryNote $dnlist');
-
-    final list = [..._list];
-    final uuid = diaryNote.uuid;
-    final index = list.indexWhere((note) => note.uuid == uuid);
-    if (index == -1) {
-      list.add(diaryNote);
-    } else {
-      list[index] = diaryNote;
-    }
-    _list = list;
-    _streamController.add(_list);
-  }
-  Future<void> removeDiaryNote(String uuid) async {
-    final list = [..._list];
-    list.removeWhere((note) => note.uuid == uuid);
-    _list = list;
-    _streamController.add(_list);
+  Future<Stream<List<DiaryNote>>> getCbtNotes() async {
+    final list = await diaryNotes();
+    _streamController = BehaviorSubject<List<DiaryNote>>.seeded(list);
+    return _streamController.asBroadcastStream();
   }
 
   Future<void> insertDiaryNote(DiaryNote diaryNote) async {
     await db.insert(
       'CbtNotes',
       diaryNote.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
     );
-  }
 
-  Future<List<DiaryNote>> diaryNotes() async {
-    final List<Map<String, Object?>> map = await db.query('CbtNotes');
-    return [
-      for (final note in map) DiaryNote.fromJson(note),
-    ];
+    final list = await diaryNotes();
+    _streamController.add(list);
   }
 
   Future<void> updateDiaryNote(DiaryNote diaryNote) async {
@@ -61,6 +35,15 @@ class DiaryNoteApi {
       where: 'uuid = ?',
       whereArgs: [diaryNote.uuid],
     );
+    final list = await diaryNotes();
+    _streamController.add(list);
+  }
+
+  Future<List<DiaryNote>> diaryNotes() async {
+    final List<Map<String, Object?>> map = await db.query('CbtNotes');
+    return [
+      for (final note in map) DiaryNote.fromJson(note),
+    ];
   }
 
   Future<void> deleteDiaryNote(String uuid) async {
@@ -69,5 +52,7 @@ class DiaryNoteApi {
       where: 'id = ?',
       whereArgs: [uuid],
     );
+    final list = await diaryNotes();
+    _streamController.add(list);
   }
 }

@@ -8,13 +8,15 @@ class DiaryNoteRepo {
 
   final DiaryNoteApi _diaryNoteApi;
   
-  Stream<List<DiaryNote>> getCbtNotes() => _diaryNoteApi.getCbtNotes();
+  Future<Stream<List<DiaryNote>>> getCbtNotes() => _diaryNoteApi.getCbtNotes();
 
-  Future<void> setDiaryNote(DiaryNote diaryNote) async {
-    return _diaryNoteApi.setDiaryNote(diaryNote);
+  Future<void> insertDiaryNote(DiaryNote diaryNote) async {
+    return _diaryNoteApi.insertDiaryNote(diaryNote);
   }
-
+  Future<void> updateDiaryNote(DiaryNote diaryNote) async {
+    return _diaryNoteApi.updateDiaryNote(diaryNote);
+  }
   Future<void> removeDiaryNote(String uuid) async {
-    return _diaryNoteApi.removeDiaryNote(uuid);
+    return _diaryNoteApi.deleteDiaryNote(uuid);
   }
 }

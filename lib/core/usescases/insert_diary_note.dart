@@ -4,11 +4,11 @@ import 'package:injectable/injectable.dart';
 
 
 @singleton
-class SetDiaryNote {
-  SetDiaryNote(this._repo);
+class InsertDiaryNote {
+  InsertDiaryNote(this._repo);
   final DiaryNoteRepo _repo;
 
   Future<void> call(DiaryNote diaryNote) async {
-    return _repo.setDiaryNote(diaryNote);
+    return _repo.insertDiaryNote(diaryNote);
   }
 }
