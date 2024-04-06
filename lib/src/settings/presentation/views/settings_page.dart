@@ -2,10 +2,10 @@ import 'package:cbt_flutter/src/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsView extends StatelessWidget {
-  const SettingsView({super.key});
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
 
-  static const routeName = '/settings';
+  static const routeName = 'settings';
 
   @override
   Widget build(BuildContext context) {

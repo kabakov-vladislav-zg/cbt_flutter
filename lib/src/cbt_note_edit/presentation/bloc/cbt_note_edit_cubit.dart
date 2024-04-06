@@ -1,24 +1,24 @@
-import 'package:cbt_flutter/core/entities/diary_note.dart';
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
-import 'package:cbt_flutter/core/usescases/update_diary_note.dart';
+import 'package:cbt_flutter/core/usescases/update_cbt_note.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @injectable
-class DiaryEditCubit extends Cubit<DiaryNote> {
+class CbtNoteEditCubit extends Cubit<CbtNote> {
   @factoryMethod
-  DiaryEditCubit(@factoryParam DiaryNote note, {
-    required UpdateDiaryNote updateDiaryNote,
+  CbtNoteEditCubit(@factoryParam CbtNote note, {
+    required UpdateCbtNote updateCbtNote,
   }) :
-    _updateDiaryNote = updateDiaryNote,
+    _updateCbtNote = updateCbtNote,
     super(note);
     
-  final UpdateDiaryNote _updateDiaryNote;
+  final UpdateCbtNote _updateCbtNote;
 
   void setEvent(String text) {
     emit(state.copyWith(trigger: text));
-    _updateDiaryNote(state);
+    _updateCbtNote(state);
   }
   void setThought(int? index, { required Thought thought }) {
     final thoughts = [...state.thoughts];
@@ -28,21 +28,21 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
       thoughts.add(thought);
     }
     emit(state.copyWith(thoughts: thoughts));
-    _updateDiaryNote(state);
+    _updateCbtNote(state);
   }
 
   void removeThought(int index) {
     final thoughts = [...state.thoughts];
     thoughts.removeAt(index);
     emit(state.copyWith(thoughts: thoughts));
-    _updateDiaryNote(state);
+    _updateCbtNote(state);
   }
 
   void removeEmptyFields() {
     final thoughts = [...state.thoughts];
     thoughts.removeWhere((Thought thought) => thought.description.trim().isEmpty);
     emit(state.copyWith(thoughts: thoughts));
-    _updateDiaryNote(state);
+    _updateCbtNote(state);
   }
 
   void setEmotion(int? index, {required Emotion emotion}) {
@@ -53,6 +53,6 @@ class DiaryEditCubit extends Cubit<DiaryNote> {
       emotions.add(emotion);
     }
     emit(state.copyWith(emotions: emotions));
-    _updateDiaryNote(state);
+    _updateCbtNote(state);
   }
 }

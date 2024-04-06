@@ -1,5 +1,5 @@
 import 'package:cbt_flutter/core/entities/thought.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
+import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +25,7 @@ class _EditThoughtState extends State<EditThought> {
   final GlobalKey _fieldKey = GlobalKey<State<TextField>>();
   late final _index = widget.index;
   late Thought _thought;
-  late final DiaryEditCubit _cubit;
+  late final CbtNoteEditCubit _cubit;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _EditThoughtState extends State<EditThought> {
     _textController = TextEditingController(text: text);
     _textController.addListener(_onChange);
     _focusNode = FocusNode();
-    _cubit = context.read<DiaryEditCubit>();
+    _cubit = context.read<CbtNoteEditCubit>();
     if (text.trim().isEmpty) _focusNode.requestFocus();
   }
 

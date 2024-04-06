@@ -1,45 +1,45 @@
-import 'package:cbt_flutter/core/entities/diary_note.dart';
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:async';
 import 'package:rxdart/subjects.dart';
 import 'package:sqflite/sqflite.dart';
 
 @singleton
-class DiaryNoteApi {
-  DiaryNoteApi({required this.db});
+class CbtNotesApi {
+  CbtNotesApi({required this.db});
 
   final Database db;
 
-  late BehaviorSubject<List<DiaryNote>> _streamController;
+  late BehaviorSubject<List<CbtNote>> _streamController;
 
-  Future<Stream<List<DiaryNote>>> getCbtNotes() async {
-    final list = await diaryNotes();
-    _streamController = BehaviorSubject<List<DiaryNote>>.seeded(list);
+  Future<Stream<List<CbtNote>>> getCbtNotesStream() async {
+    final list = await getCbtNotes();
+    _streamController = BehaviorSubject<List<CbtNote>>.seeded(list);
     return _streamController.asBroadcastStream();
   }
 
-  Future<void> insertDiaryNote(DiaryNote diaryNote) async {
+  Future<void> insertCbtNote(CbtNote cbtNote) async {
     await db.insert(
       'CbtNotes',
-      diaryNote.toJson(),
+      cbtNote.toJson(),
     );
 
-    final list = await diaryNotes();
+    final list = await getCbtNotes();
     _streamController.add(list);
   }
 
-  Future<void> updateDiaryNote(DiaryNote diaryNote) async {
+  Future<void> updateCbtNote(CbtNote cbtNote) async {
     await db.update(
       'CbtNotes',
-      diaryNote.toJson(),
+      cbtNote.toJson(),
       where: 'uuid = ?',
-      whereArgs: [diaryNote.uuid],
+      whereArgs: [cbtNote.uuid],
     );
-    final list = await diaryNotes();
+    final list = await getCbtNotes();
     _streamController.add(list);
   }
 
-  Future<List<DiaryNote>> diaryNotes() async {
+  Future<List<CbtNote>> getCbtNotes() async {
     final List<Map<String, Object?>> map = await db.query(
       'CbtNotes',
     );
@@ -52,17 +52,17 @@ class DiaryNoteApi {
     //   "SELECT * FROM CbtNotes, json_tree(CbtNotes.emotions) WHERE json_tree.key='name' AND json_tree.value='Истерия'"
     // );
     return [
-      for (final note in map) DiaryNote.fromJson(note),
+      for (final note in map) CbtNote.fromJson(note),
     ];
   }
 
-  Future<void> deleteDiaryNote(String uuid) async {
+  Future<void> deleteCbtNote(String uuid) async {
     await db.delete(
       'CbtNotes',
       where: 'id = ?',
       whereArgs: [uuid],
     );
-    final list = await diaryNotes();
+    final list = await getCbtNotes();
     _streamController.add(list);
   }
 }

@@ -1,24 +1,24 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
-import 'package:cbt_flutter/core/entities/diary_note.dart';
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/widgets/picker_emotion.dart';
+import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
+import 'package:cbt_flutter/src/cbt_note_edit/presentation/widgets/picker_emotion.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class DiaryEditEmotions extends StatefulWidget {
-  const DiaryEditEmotions({super.key});
+class CbtNoteEditEmotions extends StatefulWidget {
+  const CbtNoteEditEmotions({super.key});
 
   @override
-  State<DiaryEditEmotions> createState() => _DiaryEditEmotionsState();
+  State<CbtNoteEditEmotions> createState() => _CbtNoteEditEmotionsState();
 }
 
-class _DiaryEditEmotionsState extends State<DiaryEditEmotions> {
+class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<DiaryEditCubit, DiaryNote, List<Emotion>>(
+    return BlocSelector<CbtNoteEditCubit, CbtNote, List<Emotion>>(
       selector: (state) => state.emotions,
       builder: (context, emotions) {
         return Padding(
@@ -49,7 +49,7 @@ class _DiaryEditEmotionsState extends State<DiaryEditEmotions> {
 }
 
 Future<void> _dialogBuilder(BuildContext context) {
-  final cubit = context.read<DiaryEditCubit>();
+  final cubit = context.read<CbtNoteEditCubit>();
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -83,7 +83,7 @@ class _EditEmotionState extends State<EditEmotion> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<DiaryEditCubit, DiaryNote>(
+    return BlocListener<CbtNoteEditCubit, CbtNote>(
       listenWhen: (oldState, state) {
         final previous = oldState.emotions[_index];
         final current = state.emotions[_index];
@@ -118,7 +118,7 @@ class _EditEmotionState extends State<EditEmotion> {
                 max: 10,
                 onChanged: (value) {
                   final emotion = _emotion.copyWith(intensityFirst: value.toInt());
-                  context.read<DiaryEditCubit>().setEmotion(_index, emotion: emotion);
+                  context.read<CbtNoteEditCubit>().setEmotion(_index, emotion: emotion);
                 }
               )
             ]

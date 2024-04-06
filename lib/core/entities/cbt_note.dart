@@ -8,12 +8,12 @@ import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'diary_note.g.dart';
+part 'cbt_note.g.dart';
 
 @immutable
 @JsonSerializable()
-class DiaryNote extends Equatable {
-  DiaryNote({
+class CbtNote extends Equatable {
+  CbtNote({
     this.trigger = '',
     this.thoughts = const [],
     this.emotions = const [],
@@ -58,7 +58,7 @@ class DiaryNote extends Equatable {
   }
 
 
-  DiaryNote copyWith({
+  CbtNote copyWith({
     String? id,
     String? trigger,
     List<Thought>? thoughts,
@@ -66,7 +66,7 @@ class DiaryNote extends Equatable {
     bool? isCreated,
     bool? isCompleted,
   }) {
-    return DiaryNote(
+    return CbtNote(
       trigger: trigger ?? this.trigger,
       thoughts: thoughts ?? this.thoughts,
       emotions: emotions ?? this.emotions,
@@ -77,9 +77,9 @@ class DiaryNote extends Equatable {
     );
   }
 
-  JsonMap toJson() => _$DiaryNoteToJson(this);
+  JsonMap toJson() => _$CbtNoteToJson(this);
 
-  static DiaryNote fromJson(JsonMap json) => _$DiaryNoteFromJson(json);
+  static CbtNote fromJson(JsonMap json) => _$CbtNoteFromJson(json);
 
   @override
   List<Object> get props => [trigger, thoughts, emotions, isCreated, isCompleted, uuid, timestamp];

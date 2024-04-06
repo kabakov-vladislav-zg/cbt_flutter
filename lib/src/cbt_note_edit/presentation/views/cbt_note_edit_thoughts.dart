@@ -1,25 +1,25 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
-import 'package:cbt_flutter/core/entities/diary_note.dart';
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
+import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/edit_thought.dart';
 
-class DiaryEditThoughts extends StatefulWidget {
-  const DiaryEditThoughts({super.key});
+class CbtNoteEditThoughts extends StatefulWidget {
+  const CbtNoteEditThoughts({super.key});
 
   @override
-  State<DiaryEditThoughts> createState() => _DiaryEditThoughtsState();
+  State<CbtNoteEditThoughts> createState() => _CbtNoteEditThoughtsState();
 }
 
-class _DiaryEditThoughtsState extends State<DiaryEditThoughts> {
-  late final DiaryEditCubit _cubit;
+class _CbtNoteEditThoughtsState extends State<CbtNoteEditThoughts> {
+  late final CbtNoteEditCubit _cubit;
 
   @override
   void initState() {
-    _cubit = context.read<DiaryEditCubit>();
+    _cubit = context.read<CbtNoteEditCubit>();
     super.initState();
   }
 
@@ -31,13 +31,13 @@ class _DiaryEditThoughtsState extends State<DiaryEditThoughts> {
 
 
   void _newThought(BuildContext context) {
-    final cubit = context.read<DiaryEditCubit>();
+    final cubit = context.read<CbtNoteEditCubit>();
     cubit.setThought(null, thought: Thought(description: ''));
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<DiaryEditCubit, DiaryNote, List<Thought>>(
+    return BlocSelector<CbtNoteEditCubit, CbtNote, List<Thought>>(
       selector: (state) => state.thoughts,
       builder: (context, thoughts) {
         return CustomScrollView(

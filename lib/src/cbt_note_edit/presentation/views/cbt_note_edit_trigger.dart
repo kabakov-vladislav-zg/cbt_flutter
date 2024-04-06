@@ -1,24 +1,24 @@
-import 'package:cbt_flutter/core/entities/diary_note.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/bloc/diary_edit_cubit.dart';
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DiaryEditTrigger extends StatefulWidget {
-  const DiaryEditTrigger({super.key, this.onEditingComplete});
+class CbtNoteEditTrigger extends StatefulWidget {
+  const CbtNoteEditTrigger({super.key, this.onEditingComplete});
 
   final VoidCallback? onEditingComplete;
 
   @override
-  State<DiaryEditTrigger> createState() => _DiaryEditTriggerState();
+  State<CbtNoteEditTrigger> createState() => _CbtNoteEditTriggerState();
 }
 
-class _DiaryEditTriggerState extends State<DiaryEditTrigger> {
+class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
   late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    final bloc = BlocProvider.of<DiaryEditCubit>(context); 
+    final bloc = BlocProvider.of<CbtNoteEditCubit>(context); 
     final text = bloc.state.trigger;
     _controller = TextEditingController(text: text);
     _controller.addListener(_changed);
@@ -32,12 +32,12 @@ class _DiaryEditTriggerState extends State<DiaryEditTrigger> {
   }
 
   void _changed() {
-    context.read<DiaryEditCubit>().setEvent(_controller.text);
+    context.read<CbtNoteEditCubit>().setEvent(_controller.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<DiaryEditCubit, DiaryNote>(
+    return BlocListener<CbtNoteEditCubit, CbtNote>(
       listenWhen: (previous, current) =>
           previous.trigger != current.trigger &&
           current.trigger != _controller.text,

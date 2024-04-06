@@ -1,33 +1,32 @@
-import 'package:cbt_flutter/core/entities/diary_note.dart';
-import 'package:cbt_flutter/src/diary_edit/presentation/views/diary_edit_page.dart';
-import 'package:cbt_flutter/src/diary_overview/presentation/views/diary_overview_page.dart';
-import 'package:cbt_flutter/src/settings/presentation/views/settings_view.dart';
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_note_edit/presentation/views/cbt_note_edit_page.dart';
+import 'package:cbt_flutter/src/cbt_notes_overview/presentation/views/cbt_notes_overview_page.dart';
+import 'package:cbt_flutter/src/settings/presentation/views/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
   static final GoRouter config = GoRouter(
-    initialLocation: DiaryOverviewPage.routeName,
+    initialLocation: '/${CbtNotesOverviewPage.routeName}',
     routes: [
       GoRoute(
-        path: DiaryOverviewPage.routeName,
-        name: DiaryOverviewPage.routeName,
-        builder: (context, state) => const DiaryOverviewPage(),
+        path: '/${CbtNotesOverviewPage.routeName}',
+        name: CbtNotesOverviewPage.routeName,
+        builder: (context, state) => const CbtNotesOverviewPage(),
         routes: [
           GoRoute(
-            path: ':step',
-            name: DiaryEditPage.routeName,
+            path: CbtNoteEditPage.routeName,
+            name: CbtNoteEditPage.routeName,
             builder: (context, state) {
-              final step = DiaryEditSteps.values.firstWhere((DiaryEditSteps step) => step.name == state.pathParameters['step']!);
-              final note = state.extra as DiaryNote;
-              return DiaryEditPage(key: state.pageKey, note: note, step: step);
+              final cbtNote = state.extra as CbtNote;
+              return CbtNoteEditPage(cbtNote: cbtNote);
             },
           ),
         ],
       ),
       GoRoute(
-        path: SettingsView.routeName,
-        name: SettingsView.routeName,
-        builder: (context, state) => const SettingsView(),
+        path: '/${SettingsPage.routeName}',
+        name: SettingsPage.routeName,
+        builder: (context, state) => const SettingsPage(),
       ),
     ],
   );
