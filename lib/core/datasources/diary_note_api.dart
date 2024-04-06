@@ -40,7 +40,17 @@ class DiaryNoteApi {
   }
 
   Future<List<DiaryNote>> diaryNotes() async {
-    final List<Map<String, Object?>> map = await db.query('CbtNotes');
+    final List<Map<String, Object?>> map = await db.query(
+      'CbtNotes',
+    );
+    // final List<Map<String, Object?>> map = await db.query(
+    //   'CbtNotes, json_tree(CbtNotes.emotions)',
+    //   where: "json_tree.key=? AND json_tree.value=?",
+    //   whereArgs: ['name', 'Истерия']
+    // );
+    // final List<Map<String, Object?>> map = await db.rawQuery(
+    //   "SELECT * FROM CbtNotes, json_tree(CbtNotes.emotions) WHERE json_tree.key='name' AND json_tree.value='Истерия'"
+    // );
     return [
       for (final note in map) DiaryNote.fromJson(note),
     ];
