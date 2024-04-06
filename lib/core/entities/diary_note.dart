@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:cbt_flutter/core/entities/emotion.dart';
+import 'package:cbt_flutter/core/entities/json_map.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'diary_note.g.dart';
 
 @immutable
+@JsonSerializable()
 class DiaryNote extends Equatable {
   DiaryNote({
     this.trigger = '',
@@ -15,27 +22,41 @@ class DiaryNote extends Equatable {
     String? uuid,
     int? timestamp,
   }) :
-    _uuid = uuid ?? const Uuid().v1(),
-    _timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+    uuid = uuid ?? const Uuid().v1(),
+    timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
 
   final String trigger;
 
+  @JsonKey(fromJson: _thoughtListFromString, toJson: jsonEncode)
   final List<Thought> thoughts;
 
+  @JsonKey(fromJson: _emotionListFromString, toJson: jsonEncode)
   final List<Emotion> emotions;
 
+  @JsonKey(fromJson: _boolFromString, toJson: _boolToString)
   final bool isCreated;
 
+  @JsonKey(fromJson: _boolFromString, toJson: _boolToString)
   final bool isCompleted;
 
-  final String _uuid;
+  final String uuid;
 
-  final int _timestamp;
+  final int timestamp;
 
-  String get uuid => _uuid;
+  static bool _boolFromString(String flag) => flag == 'true';
 
-  int get timestamp => _timestamp;
+  static String _boolToString(bool flag) => flag ? 'true' : 'false';
+
+  static List<Thought> _thoughtListFromString(String string) {
+    var list = jsonDecode(string);
+    return (list as List).map((data) => Thought.fromJson(data)).toList();
+  }
+  static List<Emotion> _emotionListFromString(String string) {
+    var list = jsonDecode(string);
+    return (list as List).map((data) => Emotion.fromJson(data)).toList();
+  }
+
 
   DiaryNote copyWith({
     String? id,
@@ -51,10 +72,14 @@ class DiaryNote extends Equatable {
       emotions: emotions ?? this.emotions,
       isCreated: isCreated ?? this.isCreated,
       isCompleted: isCompleted ?? this.isCompleted,
-      uuid: _uuid,
-      timestamp: _timestamp,
+      uuid: uuid,
+      timestamp: timestamp,
     );
   }
+
+  JsonMap toJson() => _$DiaryNoteToJson(this);
+
+  static DiaryNote fromJson(JsonMap json) => _$DiaryNoteFromJson(json);
 
   @override
   List<Object> get props => [trigger, thoughts, emotions, isCreated, isCompleted, uuid, timestamp];

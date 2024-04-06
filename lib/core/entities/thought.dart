@@ -1,8 +1,14 @@
+import 'package:cbt_flutter/core/entities/json_map.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:json_annotation/json_annotation.dart';
+
+part 'thought.g.dart';
+
 @immutable
+@JsonSerializable(explicitToJson: true)
 class Thought extends Equatable {
   Thought({
     required this.description,
@@ -38,6 +44,11 @@ class Thought extends Equatable {
       uuid: _uuid,
     );
   }
+
+  
+  JsonMap toJson() => _$ThoughtToJson(this);
+
+  static Thought fromJson(JsonMap json) => _$ThoughtFromJson(json);
 
   @override
   List<Object> get props => [description, intermediate, conclusion, uuid];

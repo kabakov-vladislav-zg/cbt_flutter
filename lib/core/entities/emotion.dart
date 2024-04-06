@@ -1,9 +1,13 @@
+import 'package:cbt_flutter/core/entities/json_map.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'emotion.g.dart';
 
 @immutable
+@JsonSerializable(explicitToJson: true)
 class Emotion extends Equatable {
   Emotion({
     required this.name,
@@ -36,6 +40,10 @@ class Emotion extends Equatable {
       uuid: _uuid,
     );
   }
+
+  JsonMap toJson() => _$EmotionToJson(this);
+
+  static Emotion fromJson(JsonMap json) => _$EmotionFromJson(json);
 
   @override
   List<Object> get props => [name, intensityFirst, intensitySecond, uuid];
