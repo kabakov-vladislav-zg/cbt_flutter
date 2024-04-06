@@ -1,3 +1,4 @@
+import 'package:cbt_flutter/core/storage/shared_preferences_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,11 +10,11 @@ class SettingsPrefs {
   final SharedPreferences prefs;
 
   ThemeMode getThemeMode() {
-    final index = prefs.getInt('ThemeMode');
+    final index = prefs.getInt(StorageConstants.themeMode);
     return ThemeMode.values[index ?? 0];
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    prefs.setInt('ThemeMode', mode.index);
+    prefs.setInt(StorageConstants.themeMode, mode.index);
   }
 }
