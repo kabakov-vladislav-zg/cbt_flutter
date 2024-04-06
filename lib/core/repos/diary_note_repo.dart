@@ -13,4 +13,8 @@ class DiaryNoteRepo {
   Future<void> setDiaryNote(DiaryNote diaryNote) async {
     return _diaryNoteApi.setDiaryNote(diaryNote);
   }
+
+  Future<void> removeDiaryNote(String uuid) async {
+    return _diaryNoteApi.removeDiaryNote(uuid);
+  }
 }

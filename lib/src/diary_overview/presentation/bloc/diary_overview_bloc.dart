@@ -1,5 +1,6 @@
 import 'package:cbt_flutter/core/entities/diary_note.dart';
 import 'package:cbt_flutter/core/repos/diary_note_repo.dart';
+import 'package:cbt_flutter/core/usescases/remowe_diary_note.dart';
 import 'package:cbt_flutter/core/usescases/set_diary_note.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,11 @@ class DiaryOverviewCubit extends Bloc<DiaryOverviewEvent, DiaryOverviewState> {
   DiaryOverviewCubit({
     required DiaryNoteRepo diaryNoteRepo,
     required SetDiaryNote setDiaryNote,
+    required RemoveDiaryNote removeDiaryNote,
   }) : 
     _diaryNoteRepo = diaryNoteRepo,
     _setDiaryNote = setDiaryNote,
+    _removeDiaryNote = removeDiaryNote,
     super(const DiaryOverviewState()) {
       on<DiaryOverviewSubscriptionRequested>(_onSubscriptionRequested);
       on<DiaryOverviewAddCbtNote>(_addNote);
@@ -26,6 +29,7 @@ class DiaryOverviewCubit extends Bloc<DiaryOverviewEvent, DiaryOverviewState> {
   
   final DiaryNoteRepo _diaryNoteRepo;
   final SetDiaryNote _setDiaryNote;
+  final RemoveDiaryNote _removeDiaryNote;
 
   Future<void> _onSubscriptionRequested(
     DiaryOverviewSubscriptionRequested event,
@@ -45,7 +49,6 @@ class DiaryOverviewCubit extends Bloc<DiaryOverviewEvent, DiaryOverviewState> {
   ) async {
     final list = [...state.list];
     list.add(event.note);
-    emit(state.copyWith(list: list));
     _setDiaryNote(event.note);
   }
 
@@ -53,8 +56,6 @@ class DiaryOverviewCubit extends Bloc<DiaryOverviewEvent, DiaryOverviewState> {
     DiaryOverviewRemoveCbtNote event,
     Emitter<DiaryOverviewState> emit,
   ) async {
-    final list = [...state.list];
-    list.removeAt(event.index);
-    emit(DiaryOverviewState(list: list));
+    _removeDiaryNote(event.uuid);
   }
 }

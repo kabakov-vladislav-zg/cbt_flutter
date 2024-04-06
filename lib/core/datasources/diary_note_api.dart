@@ -25,4 +25,10 @@ class DiaryNoteApi {
     _list = list;
     _streamController.add(_list);
   }
+  void removeDiaryNote(String uuid) {
+    final list = [..._list];
+    list.removeWhere((note) => note.uuid == uuid);
+    _list = list;
+    _streamController.add(_list);
+  }
 }

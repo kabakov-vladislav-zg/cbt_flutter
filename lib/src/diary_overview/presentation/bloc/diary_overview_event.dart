@@ -15,7 +15,7 @@ final class DiaryOverviewAddCbtNote extends DiaryOverviewEvent {
 }
 
 final class DiaryOverviewRemoveCbtNote extends DiaryOverviewEvent {
-  const DiaryOverviewRemoveCbtNote(this.index);
+  const DiaryOverviewRemoveCbtNote(this.uuid);
 
-  final int index;
+  final String uuid;
 }
