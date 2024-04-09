@@ -9,13 +9,14 @@ import '../../cbt_notes_overview/views/cbt_notes_overview_page.dart';
 import './cbt_note_edit_emotions.dart';
 import './cbt_note_edit_trigger.dart';
 import './cbt_note_edit_thoughts.dart';
+import '../widgets/menu_step.dart';
 
-enum CbtNoteEditSteps {
+enum EditPage {
   trigger(title: 'триггер'),
   thoughts(title: 'мысли'),
   emotions(title: 'эмоции');
 
-  const CbtNoteEditSteps({
+  const EditPage({
     required this.title,
   });
 
@@ -51,16 +52,18 @@ class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin
   late final TabController _tabController;
   late final CbtNoteEditCubit _cubit;
   int _index = 0;
+  late final EditStep _initialEditStep;
 
   @override
   void initState() {
     _tabController = TabController(
-      length: CbtNoteEditSteps.values.length,
+      length: EditPage.values.length,
       vsync: this,
       initialIndex: _index,
     );
     _tabController.addListener(_changed);
     _cubit = context.read<CbtNoteEditCubit>();
+    _initialEditStep = _cubit.state.editStep;
     super.initState();
   }
 
@@ -68,7 +71,7 @@ class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin
   void dispose() {
     _tabController.removeListener(_changed);
     _tabController.dispose();
-    _cubit.syncChanges(debounced: false);
+    _cubit.syncChanges();
     super.dispose();
   }
 
@@ -81,7 +84,31 @@ class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin
   void _next() {
     int index = _tabController.index + 1;
     if (index >= _tabController.length) {
-      context.goNamed(CbtNotesOverviewPage.routeName);
+      final editStep = _cubit.state.editStep;
+      switch (editStep) {
+        case EditStep.creation:
+          if (_cubit.isCompleted()) {
+            _cubit.setStep(EditStep.viewing);
+          } else if (_cubit.isCreated()) {
+            _cubit.setStep(EditStep.deconstruction);
+            _tabController.index = 1;
+          } else {
+
+          }
+          break;
+        case EditStep.deconstruction:
+          if (_cubit.isCompleted()) {
+            _cubit.setStep(EditStep.viewing);
+            if (_initialEditStep != EditStep.viewing) {
+              context.goNamed(CbtNotesOverviewPage.routeName);
+            }
+          } else {
+
+          }
+          break;
+        default:
+          context.goNamed(CbtNotesOverviewPage.routeName);
+      }
     } else {
       _tabController.index = index;
     }
@@ -91,12 +118,15 @@ class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(CbtNoteEditSteps.values[_index].title),
+        title: Text(EditPage.values[_index].title),
+        actions: const [
+          MenuStep(),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _next,
         child: Icon(
-          _index + 1 >= CbtNoteEditSteps.values.length
+          _index + 1 >= EditPage.values.length
             ? Icons.check
             : Icons.keyboard_arrow_right
         ),

@@ -86,7 +86,7 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     _emitCbtNote(emotions: emotions);
   }
 
-  void syncChanges({ bool debounced = true }) {
+  void syncChanges({ bool debounced = false }) {
     final cbtNote = state.cbtNote;
     if(debounced) {
       EasyDebounce.debounce(
@@ -115,6 +115,51 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
       isCompleted: isCompleted,
     );
     emit(state.copyWith(cbtNote: cbtNote));
-    syncChanges();
+    syncChanges(debounced: true);
+  }
+
+  void setStep(EditStep step) {
+    switch (step) {
+      case EditStep.creation:
+        _emitCbtNote(isCreated: false, isCompleted: false);
+        break;
+      case EditStep.deconstruction:
+        assert(isCreated());
+        _emitCbtNote(isCreated: true, isCompleted: false);
+        break;
+      case EditStep.viewing:
+        assert(isCompleted());
+        _emitCbtNote(isCreated: true, isCompleted: true);
+        break;
+      default:
+    }
+  }
+
+  List<EditStep> getAvaibleSteps() {
+    return [
+      EditStep.creation,
+      if (state.cbtNote.isCreated) EditStep.deconstruction,
+      if (state.cbtNote.isCompleted) EditStep.viewing,
+    ];
+  }
+
+  bool isCreated() {
+    final trigger = state.cbtNote.trigger;
+    final thoughts = state.cbtNote.thoughts;
+    final emotions = state.cbtNote.emotions;
+    return trigger.trim().isNotEmpty
+      && thoughts.isNotEmpty
+      && emotions.isNotEmpty;
+  }
+
+  bool isCompleted() {
+    final thoughts = state.cbtNote.thoughts;
+    if(!isCreated()) return false;
+    final index = thoughts.indexWhere((thought) {
+      return thought.conclusion.isEmpty
+        || thought.corruption.isEmpty;
+    });
+    if(index > -1) return false;
+    return true;
   }
 }
