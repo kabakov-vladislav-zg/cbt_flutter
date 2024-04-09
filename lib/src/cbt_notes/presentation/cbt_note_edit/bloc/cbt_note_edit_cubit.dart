@@ -1,7 +1,7 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
-import 'package:cbt_flutter/src/cbt_note/domain/update_cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/update_cbt_note.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

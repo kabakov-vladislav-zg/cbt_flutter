@@ -1,7 +1,7 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
-import 'package:cbt_flutter/src/cbt_note/data/cbt_notes_repo.dart';
-import 'package:cbt_flutter/src/cbt_note/domain/remowe_cbt_note.dart';
-import 'package:cbt_flutter/src/cbt_note/domain/insert_cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_notes/data/cbt_notes_repo.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/remowe_cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/insert_cbt_note.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
