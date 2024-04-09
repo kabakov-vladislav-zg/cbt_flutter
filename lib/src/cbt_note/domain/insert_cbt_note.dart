@@ -1,5 +1,5 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
-import 'package:cbt_flutter/core/repos/cbt_notes_repo.dart';
+import 'package:cbt_flutter/src/cbt_note/data/cbt_notes_repo.dart';
 import 'package:injectable/injectable.dart';
 
 

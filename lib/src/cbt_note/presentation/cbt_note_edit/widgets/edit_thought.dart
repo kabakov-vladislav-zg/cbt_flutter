@@ -1,8 +1,9 @@
 import 'package:cbt_flutter/core/entities/thought.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/cbt_note_edit_cubit.dart';
 
 class EditThought extends StatefulWidget {
   const EditThought({

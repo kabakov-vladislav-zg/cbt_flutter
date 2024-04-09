@@ -1,7 +1,8 @@
 import 'package:cbt_flutter/core/entities/emotion.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/cbt_note_edit_cubit.dart';
 
 class EditEmotion extends StatefulWidget {
   const EditEmotion({
@@ -19,7 +20,6 @@ class EditEmotion extends StatefulWidget {
 
 class _EditEmotionState extends State<EditEmotion> {
   late final _index = widget.index;
-  late final Emotion _emotion = widget.emotion;
   final _maxIntensity = Emotion.maxIntensity;
   late final CbtNoteEditCubit _cubit;
 
@@ -60,7 +60,7 @@ class _EditEmotionState extends State<EditEmotion> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(_emotion.name),
+                Text(widget.emotion.name),
                 GestureDetector(
                   onTap: _remove,
                   child: const Icon(Icons.delete_outlined),
@@ -68,8 +68,8 @@ class _EditEmotionState extends State<EditEmotion> {
               ],
             ),
             Slider(
-              label: _emotion.intensityFirst.toString(),
-              value: _emotion.intensityFirst.toDouble(),
+              label: widget.emotion.intensityFirst.toString(),
+              value: widget.emotion.intensityFirst.toDouble(),
               divisions: _maxIntensity,
               min: 0,
               max: _maxIntensity.toDouble(),

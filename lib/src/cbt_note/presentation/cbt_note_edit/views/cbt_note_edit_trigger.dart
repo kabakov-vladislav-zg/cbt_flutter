@@ -1,4 +1,4 @@
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
+import 'package:cbt_flutter/src/cbt_note/presentation/cbt_note_edit/bloc/cbt_note_edit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

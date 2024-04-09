@@ -1,6 +1,6 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/views/cbt_note_edit_page.dart';
-import 'package:cbt_flutter/src/cbt_notes_overview/presentation/views/cbt_notes_overview_page.dart';
+import 'package:cbt_flutter/src/cbt_note/presentation/cbt_note_edit/views/cbt_note_edit_page.dart';
+import 'package:cbt_flutter/src/cbt_note/presentation/cbt_notes_overview/views/cbt_notes_overview_page.dart';
 import 'package:cbt_flutter/src/settings/presentation/views/settings_page.dart';
 import 'package:go_router/go_router.dart';
 

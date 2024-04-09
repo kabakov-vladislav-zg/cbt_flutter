@@ -1,7 +1,7 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
-import 'package:cbt_flutter/core/repos/cbt_notes_repo.dart';
-import 'package:cbt_flutter/core/usescases/remowe_cbt_note.dart';
-import 'package:cbt_flutter/core/usescases/insert_cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_note/data/cbt_notes_repo.dart';
+import 'package:cbt_flutter/src/cbt_note/domain/remowe_cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_note/domain/insert_cbt_note.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
@@ -36,10 +36,8 @@ class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewS
     Emitter<CbtNotesOverviewState> emit,
   ) async {
     await emit.forEach<List<CbtNote>>(
-      await _cbtNotesRepo.getCbtNotes(),
-      onData: (list) {
-        return state.copyWith(list: list);
-      },
+      await _cbtNotesRepo.getCbtNotesStream(),
+      onData: (list) => state.copyWith(list: list),
     );
   }
 

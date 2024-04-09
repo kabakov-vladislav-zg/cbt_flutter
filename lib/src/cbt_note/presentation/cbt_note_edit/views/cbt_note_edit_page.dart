@@ -1,13 +1,14 @@
 import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/bloc/cbt_note_edit_cubit.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/views/cbt_note_edit_emotions.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/views/cbt_note_edit_trigger.dart';
-import 'package:cbt_flutter/src/cbt_note_edit/presentation/views/cbt_note_edit_thoughts.dart';
-import 'package:cbt_flutter/src/cbt_notes_overview/presentation/views/cbt_notes_overview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../bloc/cbt_note_edit_cubit.dart';
+import '../../cbt_notes_overview/views/cbt_notes_overview_page.dart';
+import './cbt_note_edit_emotions.dart';
+import './cbt_note_edit_trigger.dart';
+import './cbt_note_edit_thoughts.dart';
 
 enum CbtNoteEditSteps {
   trigger(title: 'триггер'),
