@@ -3,21 +3,21 @@ part of 'cbt_note_edit_cubit.dart';
 @immutable
 class CbtNoteEditState extends Equatable {
   const CbtNoteEditState({
-    required this.note,
+    required this.cbtNote,
   });
 
-  final CbtNote note;
+  final CbtNote cbtNote;
 
   CbtNoteEditState copyWith({
-    CbtNote? note,
+    CbtNote? cbtNote,
   }) {
     return CbtNoteEditState(
-      note: note ?? this.note,
+      cbtNote: cbtNote ?? this.cbtNote,
     );
   }
 
   @override
   List<Object?> get props => [
-    note,
+    cbtNote,
   ];
 }

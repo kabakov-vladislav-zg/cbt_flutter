@@ -19,7 +19,7 @@ class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
   @override
   Widget build(BuildContext context) {
     return BlocSelector<CbtNoteEditCubit, CbtNoteEditState, List<Emotion>>(
-      selector: (state) => state.note.emotions,
+      selector: (state) => state.cbtNote.emotions,
       builder: (context, emotions) {
         return Padding(
           padding: const EdgeInsets.all(16),
@@ -55,7 +55,7 @@ class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
 
 Future<void> _dialogBuilder(BuildContext context) {
   final cubit = context.read<CbtNoteEditCubit>();
-  final emotions = cubit.state.note.emotions;
+  final emotions = cubit.state.cbtNote.emotions;
   final exclude = emotions.map((emotion) => emotion.name).toList();
   return showDialog<void>(
     context: context,

@@ -36,7 +36,7 @@ class _CbtNoteEditThoughtsState extends State<CbtNoteEditThoughts> {
   @override
   Widget build(BuildContext context) {
     return BlocSelector<CbtNoteEditCubit, CbtNoteEditState, List<Thought>>(
-      selector: (state) => state.note.thoughts,
+      selector: (state) => state.cbtNote.thoughts,
       builder: (context, thoughts) {
         return CustomScrollView(
           slivers: [

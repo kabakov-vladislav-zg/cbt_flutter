@@ -22,7 +22,7 @@ enum CbtNoteEditSteps {
   final String title;
 }
 
-class CbtNoteEditPage extends StatefulWidget {
+class CbtNoteEditPage extends StatelessWidget {
   const CbtNoteEditPage({super.key, required this.cbtNote});
 
   final CbtNote cbtNote;
@@ -30,28 +30,45 @@ class CbtNoteEditPage extends StatefulWidget {
   static const routeName = 'cbt_note_edit';
 
   @override
-  State<CbtNoteEditPage> createState() => _CbtNoteEditPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => getIt.get<CbtNoteEditCubit>(param1: cbtNote),
+      child: CbtNoteEdit(cbtNote: cbtNote),
+    );
+  }
 }
 
-class _CbtNoteEditPageState extends State<CbtNoteEditPage> with TickerProviderStateMixin {
+class CbtNoteEdit extends StatefulWidget {
+  const CbtNoteEdit({super.key, required this.cbtNote});
+
+  final CbtNote cbtNote;
+
+  @override
+  State<CbtNoteEdit> createState() => _CbtNoteEditState();
+}
+
+class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin {
   late final TabController _tabController;
+  late final CbtNoteEditCubit _cubit;
   int _index = 0;
 
   @override
   void initState() {
-    super.initState();
     _tabController = TabController(
       length: CbtNoteEditSteps.values.length,
       vsync: this,
       initialIndex: _index,
     );
     _tabController.addListener(_changed);
+    _cubit = context.read<CbtNoteEditCubit>();
+    super.initState();
   }
 
   @override
   void dispose() {
     _tabController.removeListener(_changed);
     _tabController.dispose();
+    _cubit.syncChanges(debounced: false);
     super.dispose();
   }
 
@@ -72,28 +89,25 @@ class _CbtNoteEditPageState extends State<CbtNoteEditPage> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt.get<CbtNoteEditCubit>(param1: widget.cbtNote),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(CbtNoteEditSteps.values[_index].title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(CbtNoteEditSteps.values[_index].title),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _next,
+        child: Icon(
+          _index + 1 >= CbtNoteEditSteps.values.length
+            ? Icons.check
+            : Icons.keyboard_arrow_right
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _next,
-          child: Icon(
-            _index + 1 >= CbtNoteEditSteps.values.length
-              ? Icons.check
-              : Icons.keyboard_arrow_right
-          ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            CbtNoteEditTrigger(onEditingComplete: _next),
-            const CbtNoteEditThoughts(),
-            const CbtNoteEditEmotions(),
-          ]
-        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          CbtNoteEditTrigger(onEditingComplete: _next),
+          const CbtNoteEditThoughts(),
+          const CbtNoteEditEmotions(),
+        ]
       ),
     );
   }

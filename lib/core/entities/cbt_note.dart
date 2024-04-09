@@ -59,7 +59,6 @@ class CbtNote extends Equatable {
 
 
   CbtNote copyWith({
-    String? id,
     String? trigger,
     List<Thought>? thoughts,
     List<Emotion>? emotions,

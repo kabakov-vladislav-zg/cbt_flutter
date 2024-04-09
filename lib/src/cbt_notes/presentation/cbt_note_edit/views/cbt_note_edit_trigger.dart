@@ -19,7 +19,7 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
   void initState() {
     super.initState();
     final cubit = context.read<CbtNoteEditCubit>(); 
-    final text = cubit.state.note.trigger;
+    final text = cubit.state.cbtNote.trigger;
     _controller = TextEditingController(text: text);
     _controller.addListener(_changed);
   }
@@ -40,10 +40,10 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
   Widget build(BuildContext context) {
     return BlocListener<CbtNoteEditCubit, CbtNoteEditState>(
       listenWhen: (previous, current) =>
-          previous.note.trigger != current.note.trigger &&
-          current.note.trigger != _controller.text,
+          previous.cbtNote.trigger != current.cbtNote.trigger &&
+          current.cbtNote.trigger != _controller.text,
       listener: (context, state) {
-        _controller.text = state.note.trigger;
+        _controller.text = state.cbtNote.trigger;
       },
       child: Padding(
         padding: const EdgeInsets.all(16),

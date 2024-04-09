@@ -13,22 +13,23 @@ part 'cbt_note_edit_state.dart';
 @injectable
 class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
   @factoryMethod
-  CbtNoteEditCubit(@factoryParam CbtNote note, {
+  CbtNoteEditCubit(@factoryParam CbtNote cbtNote, {
     required UpdateCbtNote updateCbtNote,
   }) :
     _updateCbtNote = updateCbtNote,
-    super(CbtNoteEditState(note: note));
+    super(CbtNoteEditState(cbtNote: cbtNote));
     
   final UpdateCbtNote _updateCbtNote;
+  static const debouncerTag = 'ThrottledUpdateCbtNote';
 
   void updateTrigger(String trigger) {
-    _update(state.note.copyWith(trigger: trigger));
+    _emitCbtNote(trigger: trigger);
   }
 
   void insertThought() {
-    final thoughts = [...state.note.thoughts];
+    final thoughts = [...state.cbtNote.thoughts];
     thoughts.add(Thought());
-    _update(state.note.copyWith(thoughts: thoughts));
+    _emitCbtNote(thoughts: thoughts);
   }
 
   void updateThought(int index, {
@@ -37,32 +38,32 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     String? conclusion,
     String? corruption,
   }) {
-    final thoughts = [...state.note.thoughts];
+    final thoughts = [...state.cbtNote.thoughts];
     thoughts[index] = thoughts[index].copyWith(
       description: description,
       intermediate: intermediate,
       conclusion: conclusion,
       corruption: corruption,
     );
-    _update(state.note.copyWith(thoughts: thoughts));
+    _emitCbtNote(thoughts: thoughts);
   }
 
   void removeThought(int index) {
-    final thoughts = [...state.note.thoughts];
+    final thoughts = [...state.cbtNote.thoughts];
     thoughts.removeAt(index);
-    _update(state.note.copyWith(thoughts: thoughts));
+    _emitCbtNote(thoughts: thoughts);
   }
 
   void removeEmptyFields() {
-    final thoughts = [...state.note.thoughts];
+    final thoughts = [...state.cbtNote.thoughts];
     thoughts.removeWhere((Thought thought) => thought.description.trim().isEmpty);
-    _update(state.note.copyWith(thoughts: thoughts));
+    _emitCbtNote(thoughts: thoughts);
   }
 
   void insertEmotion(String name) {
-    final emotions = [...state.note.emotions];
+    final emotions = [...state.cbtNote.emotions];
     emotions.add(Emotion(name: name));
-    _update(state.note.copyWith(emotions: emotions));
+    _emitCbtNote(emotions: emotions);
   }
 
   void updateEmotion(int index, {
@@ -70,27 +71,50 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     int? intensityFirst,
     int? intensitySecond,
   }) {
-    final emotions = [...state.note.emotions];
+    final emotions = [...state.cbtNote.emotions];
     emotions[index] = emotions[index].copyWith(
       name: name,
       intensityFirst: intensityFirst,
       intensitySecond: intensitySecond,
     );
-    _update(state.note.copyWith(emotions: emotions));
+    _emitCbtNote(emotions: emotions);
   }
 
   void removeEmotion(int index) {
-    final emotions = [...state.note.emotions];
+    final emotions = [...state.cbtNote.emotions];
     emotions.removeAt(index);
-    _update(state.note.copyWith(emotions: emotions));
+    _emitCbtNote(emotions: emotions);
   }
 
-  void _update(CbtNote note, { bool throttled = true }) {
-    emit(state.copyWith(note: note));
-    EasyDebounce.debounce(
-      'ThrottledUpdateCbtNote',
-      Duration(seconds: throttled ? 2 : 0),
-      () => _updateCbtNote(note)
+  void syncChanges({ bool debounced = true }) {
+    final cbtNote = state.cbtNote;
+    if(debounced) {
+      EasyDebounce.debounce(
+        debouncerTag,
+        const Duration(seconds: 2),
+        () => _updateCbtNote(cbtNote)
+      );
+    } else {
+      EasyDebounce.cancel(debouncerTag);
+      _updateCbtNote(cbtNote);
+    }
+  }
+
+  void _emitCbtNote({
+    String? trigger,
+    List<Thought>? thoughts,
+    List<Emotion>? emotions,
+    bool? isCreated,
+    bool? isCompleted,
+  }) {
+    final cbtNote = state.cbtNote.copyWith(
+      trigger: trigger,
+      thoughts: thoughts,
+      emotions: emotions,
+      isCreated: isCreated,
+      isCompleted: isCompleted,
     );
+    emit(state.copyWith(cbtNote: cbtNote));
+    syncChanges();
   }
 }
