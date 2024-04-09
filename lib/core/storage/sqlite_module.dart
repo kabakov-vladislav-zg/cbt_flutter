@@ -12,9 +12,18 @@ Future<Database> getDb() async {
   return openDatabase(
     join(await getDatabasesPath(), 'cbt_diary.db'),
     onCreate: (db, version) {
-      return db.execute(
-        'CREATE TABLE CbtNotes(uuid TEXT PRIMARY KEY, trigger TEXT, timestamp INTEGER, isCreated TEXT, isCompleted TEXT, thoughts TEXT, emotions TEXT)',
-      );
+      return db.execute('''
+          CREATE TABLE
+          CbtNotes(
+            uuid TEXT PRIMARY KEY,
+            trigger TEXT,
+            timestamp INTEGER,
+            isCreated TEXT,
+            isCompleted TEXT,
+            thoughts TEXT,
+            emotions TEXT
+          )
+        ''');
     },
     version: 1,
   );

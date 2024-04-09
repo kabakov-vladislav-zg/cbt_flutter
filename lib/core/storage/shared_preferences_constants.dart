@@ -1,3 +1,3 @@
-abstract class StorageConstants {
+abstract class SharedPreferencesConstants {
   static const String themeMode = 'ThemeMode';
 }

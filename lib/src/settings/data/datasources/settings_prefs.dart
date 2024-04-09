@@ -10,11 +10,11 @@ class SettingsPrefs {
   final SharedPreferences prefs;
 
   ThemeMode getThemeMode() {
-    final index = prefs.getInt(StorageConstants.themeMode);
+    final index = prefs.getInt(SharedPreferencesConstants.themeMode);
     return ThemeMode.values[index ?? 0];
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    prefs.setInt(StorageConstants.themeMode, mode.index);
+    prefs.setInt(SharedPreferencesConstants.themeMode, mode.index);
   }
 }
