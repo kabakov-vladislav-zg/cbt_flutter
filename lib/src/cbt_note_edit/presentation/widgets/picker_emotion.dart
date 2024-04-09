@@ -1,16 +1,19 @@
-import 'package:cbt_flutter/core/utils/list_emotions.dart';
+import 'package:cbt_flutter/core/di/sl.dart';
+import 'package:cbt_flutter/core/utils/emotions.dart';
 import 'package:flutter/material.dart';
 
 class PickerEmotion extends StatefulWidget {
-  const PickerEmotion({super.key, this.callback});
-  final void Function(String)? callback;
+  const PickerEmotion({super.key, required this.callback, required this.exclude});
+  final void Function(String) callback;
+  final List<String> exclude;
 
   @override
   State<PickerEmotion> createState() => _PickerEmotionState();
 }
 
 class _PickerEmotionState extends State<PickerEmotion> {
-  final _keys = listEmotions.map((section) => GlobalKey<State<SliverAppBar>>()).toList();
+  final _emotions = getIt.get<Emotions>();
+  late final List<GlobalKey> _keys = _emotions.sections.map((section) => GlobalKey()).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +40,22 @@ class _PickerEmotionState extends State<PickerEmotion> {
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    color: listEmotions[index].color,
-                    child: Text(listEmotions[index].name),
+                    color: _emotions.sections[index].color,
+                    child: Text(_emotions.sections[index].section),
                   ),
                 );
               },
-              childCount: listEmotions.length,
+              childCount: _emotions.sections.length,
             ),
           ),
-          for (final section in listEmotions) 
+          for (final section in _emotions.sections) 
             SliverMainAxisGroup(
               slivers: [
                 SliverAppBar(
-                  key: _keys[listEmotions.indexOf(section)],
+                  key: _keys[_emotions.sections.indexOf(section)],
                   pinned: true,
                   automaticallyImplyLeading: false,
-                  title: Text(section.name),
+                  title: Text(section.section),
                 ),
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -63,18 +66,19 @@ class _PickerEmotionState extends State<PickerEmotion> {
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          if (widget.callback != null) {
-                            widget.callback!(section.list[index]);
-                          }
-                        },
-                        child: Container(
+                      final name = section.list[index];
+                      final isExcluded = widget.exclude.contains(name);
+                      final btn = Container(
                           alignment: Alignment.center,
-                          color: section.color,
-                          child: Text(section.list[index]),
-                        ),
-                      );
+                          color: isExcluded ? Colors.grey : section.color,
+                          child: Text(name),
+                        );
+                      return isExcluded
+                        ? btn
+                        : GestureDetector(
+                            onTap: () => widget.callback(name),
+                            child: btn,
+                          );
                     },
                     childCount: section.list.length,
                   ),

@@ -1,22 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
+
+@lazySingleton
+class Emotions {
+  Emotions() : map = _getMap();
+
+  final Map<String, EmotionDesc> map;
+  List<SectionEmotions> get sections => _listEmotions;
+
+  static Map<String, EmotionDesc> _getMap() {
+    Map<String, EmotionDesc> map = {};
+    for (final SectionEmotions section in _listEmotions) {
+      for (final String emotion in section.list) {
+        map[emotion] = EmotionDesc(name: emotion, section: section.section, color: section.color);
+      }
+    }
+    return map;
+  }
+}
 
 class SectionEmotions {
-  SectionEmotions({
-    required this.name,
+  const SectionEmotions({
+    required this.section,
     required this.color,
     required this.list,
   });
 
-  String name;
+  final String section;
   
-  Color color;
+  final Color color;
   
-  List<String> list;
+  final List<String> list;
 }
 
-List<SectionEmotions> listEmotions = [
+class EmotionDesc {
+  const EmotionDesc({
+    required this.name,
+    required this.section,
+    required this.color,
+  });
+
+  final String name;
+
+  final String section;
+  
+  final Color color;
+}
+
+List<SectionEmotions> _listEmotions = const [
   SectionEmotions(
-    name: 'Гнев',
+    section: 'Гнев',
     color: Colors.red,
     list: [
       'Бешенство',
@@ -38,7 +71,7 @@ List<SectionEmotions> listEmotions = [
     ],
   ),
   SectionEmotions(
-    name: 'Страх',
+    section: 'Страх',
     color: Colors.green,
     list: [
       'Ужас',
@@ -65,7 +98,7 @@ List<SectionEmotions> listEmotions = [
     ],
   ),
   SectionEmotions(
-    name: 'Грусть',
+    section: 'Грусть',
     color: Colors.blue,
     list: [
       'Горечь',
@@ -88,7 +121,7 @@ List<SectionEmotions> listEmotions = [
     ],
   ),
   SectionEmotions(
-    name: 'Радость',
+    section: 'Радость',
     color: Colors.orange,
     list: [
       'Счастье',
@@ -113,7 +146,7 @@ List<SectionEmotions> listEmotions = [
     ],
   ),
   SectionEmotions(
-    name: 'Любовь',
+    section: 'Любовь',
     color: Colors.pink,
     list: [
       'Нежность',

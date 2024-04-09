@@ -11,7 +11,7 @@ part 'thought.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Thought extends Equatable {
   Thought({
-    required this.description,
+    this.description = '',
     this.intermediate = const [],
     this.conclusion = '',
     this.corruption = '',

@@ -32,7 +32,7 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
 
   void _changed() {
     final cubit = context.read<CbtNoteEditCubit>();
-    cubit.setEvent(_controller.text);
+    cubit.updateTrigger(_controller.text);
   }
 
   @override

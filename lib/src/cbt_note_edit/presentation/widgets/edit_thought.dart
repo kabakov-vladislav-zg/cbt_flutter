@@ -21,20 +21,17 @@ class EditThought extends StatefulWidget {
 }
 class _EditThoughtState extends State<EditThought> {
   late final TextEditingController _textController;
-  late final FocusNode _focusNode;
+  late final FocusNode _focusNode = FocusNode();
   final GlobalKey _fieldKey = GlobalKey<State<TextField>>();
   late final _index = widget.index;
-  late Thought _thought;
   late final CbtNoteEditCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _thought = widget.thought;
-    final text = _thought.description; 
+    final text = widget.thought.description; 
     _textController = TextEditingController(text: text);
     _textController.addListener(_onChange);
-    _focusNode = FocusNode();
     _cubit = context.read<CbtNoteEditCubit>();
     if (text.trim().isEmpty) _focusNode.requestFocus();
   }
@@ -47,9 +44,8 @@ class _EditThoughtState extends State<EditThought> {
   }
 
   void _onChange() {
-    final text = _textController.text;
-    final thought = _thought.copyWith(description: text);
-    _cubit.setThought(_index, thought: thought);
+    final description = _textController.text;
+    _cubit.updateThought(_index, description: description);
   }
 
   void _remove() {

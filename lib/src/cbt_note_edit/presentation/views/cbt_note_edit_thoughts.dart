@@ -30,8 +30,7 @@ class _CbtNoteEditThoughtsState extends State<CbtNoteEditThoughts> {
 
 
   void _newThought(BuildContext context) {
-    final cubit = context.read<CbtNoteEditCubit>();
-    cubit.setThought(null, thought: Thought(description: ''));
+    _cubit.insertThought();
   }
 
   @override
