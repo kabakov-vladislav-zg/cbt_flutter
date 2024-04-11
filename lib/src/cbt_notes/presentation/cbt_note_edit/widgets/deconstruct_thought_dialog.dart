@@ -22,6 +22,7 @@ class DeconstructThoughtDialog extends StatefulWidget {
 }
 class _DeconstructThoughtDialogState extends State<DeconstructThoughtDialog> {
   late final Thought _thought = widget.thought;
+  late final int _index = widget.index;
   late final CbtNoteEditCubit _cubit;
 
   @override
@@ -40,19 +41,66 @@ class _DeconstructThoughtDialogState extends State<DeconstructThoughtDialog> {
             title: Text('Деконструкция мысли'),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            sliver: SliverTextFieldList(
-              items: const [],
-              onChange: (list) => print(list),
-              itemBuilder: (SliverTextFieldListBuilderParams params) {
-                return TextField(
-                  controller: params.textController,
-                  focusNode: params.focusNode,
-                  onEditingComplete: params.onEditingComplete,
-                  keyboardType: TextInputType.text,
-                  maxLines: null,
-                );
-              }
+            padding: const EdgeInsets.all(16),
+            sliver: SliverMainAxisGroup(
+              slivers: [
+                const SliverToBoxAdapter(
+                  child: Text('Изначальная мысль'),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: _thought.description),
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Text('Промежуточные мысли (необязательно)'),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  sliver: SliverTextFieldList(
+                    items: _thought.intermediate,
+                    onChange: (intermediate)
+                      => _cubit.updateThought(_index, intermediate: intermediate),
+                    itemBuilder: (SliverTextFieldListBuilderParams params) {
+                      return TextField(
+                        controller: params.textController,
+                        focusNode: params.focusNode,
+                        onEditingComplete: params.onEditingComplete,
+                        keyboardType: TextInputType.text,
+                        maxLines: null,
+                      );
+                    }
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Text('Когнктивное искажение'),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: TextField(
+                      controller: TextEditingController(text: _thought.corruption),
+                      onChanged: (corruption) => _cubit.updateThought(_index, corruption: corruption),
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Text('Рациональный ответ'),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: TextField(
+                      controller: TextEditingController(text: _thought.conclusion),
+                      onChanged: (conclusion) => _cubit.updateThought(_index, conclusion: conclusion),
+                    ),
+                  ),
+                ),
+              ]
             ),
           ),
         ]

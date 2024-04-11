@@ -51,5 +51,5 @@ class Thought extends Equatable {
   static Thought fromJson(JsonMap json) => _$ThoughtFromJson(json);
 
   @override
-  List<Object> get props => [description, intermediate, conclusion, uuid];
+  List<Object> get props => [description, intermediate, conclusion, corruption, uuid];
 }
