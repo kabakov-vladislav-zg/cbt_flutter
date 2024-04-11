@@ -32,7 +32,7 @@ class CbtNotesOverview extends StatelessWidget {
         onPressed: () {
           final cbtNote = CbtNote();
           context.read<CbtNotesOverviewBloc>().add(CbtNotesOverviewInsert(cbtNote));
-          context.goNamed(CbtNoteEditPage.routeName, pathParameters: { 'step': 'trigger' }, extra: cbtNote);
+          context.goNamed(CbtNoteEditPage.routeName, extra: cbtNote);
         },
       ),
       body: BlocSelector<CbtNotesOverviewBloc, CbtNotesOverviewState, List<CbtNote>>(

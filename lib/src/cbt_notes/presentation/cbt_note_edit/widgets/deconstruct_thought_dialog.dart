@@ -42,18 +42,18 @@ class _DeconstructThoughtDialogState extends State<DeconstructThoughtDialog> {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             sliver: SliverTextFieldList(
-                  items: const [],
-                  onChange: (list) => print(list),
-                  itemBuilder: (SliverTextFieldListBuilderParams params) {
-                    return TextField(
-                      controller: params.textController,
-                      focusNode: params.focusNode,
-                      onEditingComplete: params.onEditingComplete,
-                      keyboardType: TextInputType.text,
-                      maxLines: null,
-                    );
-                  }
-                ),
+              items: const [],
+              onChange: (list) => print(list),
+              itemBuilder: (SliverTextFieldListBuilderParams params) {
+                return TextField(
+                  controller: params.textController,
+                  focusNode: params.focusNode,
+                  onEditingComplete: params.onEditingComplete,
+                  keyboardType: TextInputType.text,
+                  maxLines: null,
+                );
+              }
+            ),
           ),
         ]
       ),
