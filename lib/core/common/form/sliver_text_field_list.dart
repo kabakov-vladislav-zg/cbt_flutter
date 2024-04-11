@@ -20,18 +20,18 @@ class SliverTextFieldListItem {
   late final String uuid;
   final VoidCallback _onChangeCallback;
   final void Function(String uuid, [String? text]) _onDeleteCallback;
-  static const String invisibleChar = '\u200B';
+  static const String _invisibleChar = '\u200B';
 
   static String _getText(String value) {
-    if (value.startsWith(invisibleChar)) {
+    if (value.startsWith(_invisibleChar)) {
       return value;
     } else {
-      return invisibleChar + value;
+      return _invisibleChar + value;
     }
   }
 
   bool isEmpty() {
-    return text.trim() == invisibleChar;
+    return text.trim() == _invisibleChar;
   }
 
   int get selection => textController.selection.start;
@@ -39,6 +39,7 @@ class SliverTextFieldListItem {
 
   String get text => textController.text;
   set text(String value) => textController.text = value;
+  String get clearText => text.replaceAll(_invisibleChar, '').trim();
 
   void _requestDelete(String uuid, [String? text]) {
     Future.delayed(const Duration(seconds: 0))
@@ -46,7 +47,7 @@ class SliverTextFieldListItem {
   }
 
   void _onChange() {
-    if (text.startsWith(invisibleChar)) {
+    if (text.startsWith(_invisibleChar)) {
       if (textController.selection.start == 0) {
         selection = 1;
       }
@@ -177,7 +178,7 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
   }
 
   void _onChange() {
-    List<String> items = _items.map((item) => item.text).toList();
+    List<String> items = _items.map((item) => item.clearText).toList();
     items.removeWhere((text) => text.trim().isEmpty);
     widget.onChange(items);
   }
