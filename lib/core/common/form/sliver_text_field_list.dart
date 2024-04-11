@@ -172,8 +172,8 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
       });
       item.focusNode.requestFocus();
       item.selection = 1;
-      _onChange();
     }
+    _onChange();
   }
 
   void _onChange() {
