@@ -3,14 +3,15 @@ import 'package:uuid/uuid.dart';
 
 class SliverTextFieldListItem {
   SliverTextFieldListItem({
-    required this.text,
+    required String text,
     required VoidCallback onChange,
-    required Future<void> Function(String uuid) onDelete,
+    required void Function(String uuid, [String? text]) onDelete,
   }) : _onChangeCallback = onChange,
        _onDeleteCallback = onDelete {
-    textController = TextEditingController(text: getText(text));
+    textController = TextEditingController(text: _getText(text));
     textController.addListener(_onChange);
     focusNode = FocusNode();
+    focusNode.addListener(_onFocus);
     uuid = const Uuid().v1();
   }
 
@@ -18,35 +19,57 @@ class SliverTextFieldListItem {
   late final FocusNode focusNode;
   late final String uuid;
   final VoidCallback _onChangeCallback;
-  final Future<void> Function(String uuid) _onDeleteCallback;
-  static const String _invisibleChar = '\u200B';
-  String text;
+  final void Function(String uuid, [String? text]) _onDeleteCallback;
+  static const String invisibleChar = '\u200B';
 
-  static String getText(String value) {
-    if (value.startsWith(_invisibleChar)) {
+  static String _getText(String value) {
+    if (value.startsWith(invisibleChar)) {
       return value;
     } else {
-      return _invisibleChar + value;
+      return invisibleChar + value;
     }
   }
 
   bool isEmpty() {
-    return text.trim() == _invisibleChar;
+    return text.trim() == invisibleChar;
+  }
+
+  int get selection => textController.selection.start;
+  set selection(int offset) => textController.selection = TextSelection.collapsed(offset: offset);
+
+  String get text => textController.text;
+  set text(String value) => textController.text = value;
+
+  void _requestDelete(String uuid, [String? text]) {
+    Future.delayed(const Duration(seconds: 0))
+      .then((_) => _onDeleteCallback(uuid, text));
   }
 
   void _onChange() {
-    text = textController.text;
-    if (text.isEmpty) {
-      textController.text = _invisibleChar;
-      _onDeleteCallback(uuid);
-    } else {
+    if (text.startsWith(invisibleChar)) {
+      if (textController.selection.start == 0) {
+        selection = 1;
+      }
       _onChangeCallback();
+    } else if (text.trim().isEmpty) {
+      _requestDelete(uuid);
+    } else {
+      _requestDelete(uuid, text);
+      text = _getText(text);
+      selection = 1;
+    }
+  }
+
+  void _onFocus() {
+    if (!focusNode.hasFocus) {
+      text = text.trim();
     }
   }
 
   void dispose() {
     textController.removeListener(_onChange);
     textController.dispose();
+    focusNode.removeListener(_onFocus);
     focusNode.dispose();
   }
 }
@@ -107,25 +130,40 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
     super.dispose();
   }
 
-  Future<void> _onDelete(String uuid) async {
-    await Future.delayed(const Duration(seconds: 0));
+  void _onDelete(String uuid, [String? text]) {
     final index = _items.indexWhere((item) => item.uuid == uuid);
     if (index < 1) return;
     _items[index].dispose();
     setState(() {
       _items.removeAt(index);
     });
-    _items[index - 1].focusNode.requestFocus();
+    final item = _items[index - 1];
+    if (text != null) {
+      final initialText = item.textController.text;
+      item.textController.text += ' $text';
+      item.focusNode.requestFocus();
+      item.selection = initialText.length + 1;
+    } else {
+      item.focusNode.requestFocus();
+    }
     _onChange();
   }
 
   void _onEditingComplete(int index) {
+    final currentItem = _items[index];
+    String text = '';
+    if (currentItem.selection < currentItem.text.length) {
+      text = currentItem.text.substring(currentItem.selection);
+      currentItem.text = currentItem.text.substring(0, currentItem.selection);
+    }
     final nextItem = _items.elementAtOrNull(index + 1);
     if (nextItem != null && nextItem.isEmpty()) {
       nextItem.focusNode.requestFocus();
+      nextItem.text += text;
+      nextItem.selection = 1;
     } else {
       final item = SliverTextFieldListItem(
-        text: '',
+        text: text,
         onChange: _onChange,
         onDelete: _onDelete,
       );
@@ -133,6 +171,7 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
         _items.insert(index + 1, item);
       });
       item.focusNode.requestFocus();
+      item.selection = 1;
       _onChange();
     }
   }
