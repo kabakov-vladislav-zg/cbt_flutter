@@ -61,7 +61,6 @@ class _EditThoughtState extends State<EditThought> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       margin: const EdgeInsetsDirectional.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -87,9 +86,10 @@ class _EditThoughtState extends State<EditThought> {
           maxLines: null,
           onEditingComplete: _onEditingComplete,
           decoration: InputDecoration(
-            suffix: GestureDetector(
-              onTap: _remove,
-              child: const Icon(Icons.delete_outlined),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            suffix: IconButton(
+              onPressed: _remove,
+              icon: const Icon(Icons.delete_outlined),
             ),
             enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
             focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),

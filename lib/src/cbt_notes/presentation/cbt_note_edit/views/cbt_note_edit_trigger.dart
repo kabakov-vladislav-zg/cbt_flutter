@@ -18,12 +18,11 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
   @override
   void initState() {
     super.initState();
-    final cubit = context.read<CbtNoteEditCubit>(); 
+    final cubit = context.read<CbtNoteEditCubit>();
     final text = cubit.state.cbtNote.trigger;
     _controller = TextEditingController(text: text);
     _controller.addListener(_changed);
   }
-
 
   @override
   void dispose() {
@@ -38,39 +37,39 @@ class _CbtNoteEditTriggerState extends State<CbtNoteEditTrigger> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CbtNoteEditCubit, CbtNoteEditState>(
-      listenWhen: (previous, current) =>
-          previous.cbtNote.trigger != current.cbtNote.trigger &&
-          current.cbtNote.trigger != _controller.text,
-      listener: (context, state) {
-        _controller.text = state.cbtNote.trigger;
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: TextField(
-                controller: _controller,
-                onEditingComplete: widget.onEditingComplete,
-                keyboardType: TextInputType.text,
-                maxLines: null,
-                expands: true,
-                decoration: InputDecoration(
-                  isCollapsed: true,
-                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  hintText: 'Опишите произошедшее событие',
-                  hintStyle: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey.shade400
-                  )
-                ),
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: BlocSelector<CbtNoteEditCubit, CbtNoteEditState, EditStep>(
+              selector: (state) => state.editStep,
+              builder: (context, editStep) {
+                return TextField(
+                  controller: _controller,
+                  onEditingComplete: widget.onEditingComplete,
+                  keyboardType: TextInputType.text,
+                  maxLines: null,
+                  expands: true,
+                  readOnly: editStep != EditStep.creation,
+                  decoration: InputDecoration(
+                    isCollapsed: true,
+                    enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    hintText: 'Опишите произошедшее событие',
+                    hintStyle: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey.shade400
+                    )
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
