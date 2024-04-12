@@ -1,9 +1,9 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
-import 'package:cbt_flutter/core/common/form/sliver_text_field_list.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sliver_text_field_list/sliver_text_field_list.dart';
 
 import '../bloc/cbt_note_edit_cubit.dart';
 
@@ -65,15 +65,6 @@ class _DeconstructThoughtDialogState extends State<DeconstructThoughtDialog> {
                     items: _thought.intermediate,
                     onChange: (intermediate)
                       => _cubit.updateThought(_index, intermediate: intermediate),
-                    itemBuilder: (SliverTextFieldListBuilderParams params) {
-                      return TextField(
-                        controller: params.textController,
-                        focusNode: params.focusNode,
-                        onEditingComplete: params.onEditingComplete,
-                        keyboardType: TextInputType.text,
-                        maxLines: null,
-                      );
-                    }
                   ),
                 ),
                 const SliverToBoxAdapter(

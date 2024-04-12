@@ -1,10 +1,10 @@
 part of 'sliver_text_field_list.dart';
 
-class SliverTextFieldListItem {
+class SliverTextFieldListItem extends Equatable {
   SliverTextFieldListItem({
     required String text,
     required VoidCallback onChange,
-    required void Function(String uuid, [String? text]) onDelete,
+    required void Function(String uuid, { String? text }) onDelete,
   }) : _onChangeCallback = onChange,
        _onDeleteCallback = onDelete {
     textController = TextEditingController(text: _getText(text));
@@ -18,7 +18,7 @@ class SliverTextFieldListItem {
   late final FocusNode focusNode;
   late final String uuid;
   final VoidCallback _onChangeCallback;
-  final void Function(String uuid, [String? text]) _onDeleteCallback;
+  final void Function(String uuid, { String? text }) _onDeleteCallback;
   static const String _invisibleChar = '\u200B';
 
   static String _getText(String value) {
@@ -37,12 +37,12 @@ class SliverTextFieldListItem {
   set selection(int offset) => textController.selection = TextSelection.collapsed(offset: offset);
 
   String get text => textController.text;
-  set text(String value) => textController.text = value;
+  set text(String value) => textController.text = _getText(value);
   String get clearText => text.replaceAll(_invisibleChar, '').trim();
 
   void _requestDelete(String uuid, [String? text]) {
     Future.delayed(const Duration(seconds: 0))
-      .then((_) => _onDeleteCallback(uuid, text));
+      .then((_) => _onDeleteCallback(uuid, text: text));
   }
 
   void _onChange() {
@@ -66,10 +66,15 @@ class SliverTextFieldListItem {
     }
   }
 
+  void requestFocus() => focusNode.requestFocus();
+
   void dispose() {
     textController.removeListener(_onChange);
     textController.dispose();
     focusNode.removeListener(_onFocus);
     focusNode.dispose();
   }
+
+  @override
+  List<Object?> get props => [uuid];
 }

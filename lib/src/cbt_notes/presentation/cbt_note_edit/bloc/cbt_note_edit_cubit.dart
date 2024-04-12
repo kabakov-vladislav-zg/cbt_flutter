@@ -39,8 +39,6 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     String? corruption,
   }) {
     final thoughts = [...state.cbtNote.thoughts];
-    print('corruption ${conclusion}');
-    print('1 ${thoughts[index].conclusion}');
     thoughts[index] = thoughts[index].copyWith(
       description: description,
       intermediate: intermediate,
@@ -48,7 +46,6 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
       corruption: corruption,
     );
     _emitCbtNote(thoughts: thoughts);
-    print('2 ${thoughts[index].conclusion}');
   }
 
   void removeThought(int index) {

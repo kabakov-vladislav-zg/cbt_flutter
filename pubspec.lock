@@ -634,6 +634,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliver_text_field_list:
+    dependency: "direct main"
+    description:
+      path: "packages/sliver_text_field_list"
+      relative: true
+    source: path
+    version: "1.0.0+1"
   source_gen:
     dependency: transitive
     description:
