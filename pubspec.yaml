@@ -16,6 +16,8 @@ dependencies:
     sdk: flutter
   sliver_text_field_list:
     path: packages/sliver_text_field_list
+  ui:
+    path: packages/ui
   flutter_bloc: ^8.1.5
   get_it: ^7.6.7
   injectable: ^2.3.5
