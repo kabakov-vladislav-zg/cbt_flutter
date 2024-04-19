@@ -47,7 +47,7 @@ class EmotionDesc {
   final Color color;
 }
 
-List<SectionEmotions> _listEmotions = const [
+const _listEmotions = [
   SectionEmotions(
     section: 'Гнев',
     color: Colors.red,
