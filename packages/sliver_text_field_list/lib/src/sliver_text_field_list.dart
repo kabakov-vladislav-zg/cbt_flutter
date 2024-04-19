@@ -1,9 +1,5 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
-import 'package:uuid/uuid.dart';
-
-part 'sliver_text_field_list_item.dart';
 
 class SliverTextFieldList extends StatefulWidget {
   const SliverTextFieldList({
@@ -25,17 +21,6 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
     ? ['']
     : [...widget.items];
 
-  @override
-  void initState() {
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _onDelete(int index) {
     setState(() {
       if (_items.length > 1) {
@@ -44,38 +29,45 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
         _items[0] = '';
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final nextItem = _getItem(index) ?? _getItem(index - 1);
+      nextItem!.requestFocus();
+      nextItem.selection = double.maxFinite.toInt();
+    });
     _emit();
   }
 
   void _onEditingComplete(int index) {
     String text = '';
+    String currentText = _items[index];
 
     final selection = _getItem(index)!.selection;
-    final currentText = _items[index];
     final length = currentText.length;
     if (selection < length) {
-      text = currentText.substring(selection);
-      setState(() {
-        _items[index] = currentText.substring(0, selection);
-      });
+      text = currentText.substring(selection).trim();
+      currentText = currentText.substring(0, selection);
     }
+    setState(() {
+      _items[index] = currentText.trim();
+    });
 
-    UITextFieldState? nextItem = _getItem(index + 1);
+    final nwxtIndex = index + 1;
+    UITextFieldState? nextItem = _getItem(nwxtIndex);
     if (nextItem != null && nextItem.isEmpty) {
       setState(() {
-        _items[index + 1] = text;
+        _items[nwxtIndex] = text;
       });
       nextItem.requestFocus();
       nextItem.selection = 0;
     } else {
       setState(() {
-        _items.insert(index + 1, text);
+        _items.insert(nwxtIndex, text);
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        nextItem = _getItem(index + 1);
+        nextItem = _getItem(nwxtIndex);
         nextItem!.requestFocus();
         nextItem!.selection = 0;
-      });      
+      });
     }
     _emit();
   }
@@ -101,14 +93,16 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
   }
 
   void _onBackspace(int index) {
+    if (_items.length == 1) return;
     final text = _items[index].trim();
+    if (index == 0 && text.isNotEmpty) return;
+    setState(() {
+      _items.removeAt(index);
+    });
 
     if (index > 0) {
       final prevIndex = index - 1;
       final prevItem = _getItem(prevIndex)!;
-      setState(() {
-        _items.removeAt(index);
-      });
       if (text.isEmpty) {
         prevItem.requestFocus();
       } else {
@@ -124,20 +118,22 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
         setState(() {
           _items[prevIndex] = prevText;
         });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          prevItem.requestFocus();
-          prevItem.selection = offset;
-        }); 
+        prevItem.requestFocus();
+        prevItem.selection = offset;
       }
-    } else if (_items.length > 1 && text.isEmpty) {
-      setState(() {
-        _items.removeAt(0);
-      });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _getItem(0)!.selection = 0;
-      }); 
     }
     _emit();
+  }
+
+  void _addItem() {
+    if (_items.last.isNotEmpty) {
+      setState(() {
+        _items.add('');
+      });
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getItem(_items.length - 1)!.requestFocus();
+    });
   }
 
   UITextFieldState? _getItem(int index) {
@@ -162,6 +158,7 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
           onReorder: _onReorder,
           itemCount: _items.length,
           itemBuilder: (BuildContext context, int index) {
+            final clearable = _items.length > 1 || _items[index].isNotEmpty;
             return Material(
               key: Key('item$index'),
               child: Row(
@@ -180,25 +177,10 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
                       onChanged: (value) => _onChanged(index, value),
                       onEditingComplete: () => _onEditingComplete(index),
                       onBackspace: () => _onBackspace(index),
+                      onDelete: () => _onDelete(index),
                       maxLines: null,
+                      clearable: clearable,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                        suffixIcon: Visibility(
-                          visible: true,
-                          maintainSize: true,
-                          maintainAnimation: true,
-                          maintainState: true,
-                          child: IconButton(
-                            onPressed: () => _onDelete(index),
-                            padding: const EdgeInsets.all(0),
-                            iconSize: 20,
-                            icon: const Icon(Icons.close),
-                          ),
-                        ),
-                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                        focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                      ),
                     ),
                   ),
                 ],
@@ -215,7 +197,7 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
                 ),
                 icon: const Icon(Icons.add, color: Colors.black),
                 label: const Text('добавить', style: TextStyle(color: Colors.black),),
-                onPressed: () {},
+                onPressed: _addItem,
               )
             ],
           ),
@@ -231,61 +213,7 @@ class _GetKey<T extends State> {
   GlobalKey<T> call(int index) {
     if (_keys[index] == null) {
       _keys[index] = GlobalKey<T>();
-      return _keys[index]!;
-    } else {
-      return _keys[index]!;
     }
-  }
-}
-
-class _ClearBtn extends StatefulWidget {
-  const _ClearBtn({
-    required this.focusNode,
-    required this.onPressed,
-  });
-
-  final FocusNode focusNode;
-  final VoidCallback onPressed;
-
-  @override
-  State<_ClearBtn> createState() => _ClearBtnState();
-}
-
-class _ClearBtnState extends State<_ClearBtn> {
-  late bool isFocused;
-
-  @override
-  void initState() {
-    widget.focusNode.addListener(_onFocus);
-    isFocused = widget.focusNode.hasFocus;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocus);
-    super.dispose();
-  }
-
-  void _onFocus() {
-    setState(() {
-      isFocused = widget.focusNode.hasFocus;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Visibility(
-      visible: isFocused,
-      maintainSize: true,
-      maintainAnimation: true,
-      maintainState: true,
-      child: IconButton(
-        onPressed: widget.onPressed,
-        padding: const EdgeInsets.all(0),
-        iconSize: 20,
-        icon: const Icon(Icons.close),
-      ),
-    );
+    return _keys[index]!;
   }
 }
