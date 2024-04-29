@@ -1,19 +1,35 @@
 import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:cbt_flutter/core/utils/emotions.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class PickerEmotion extends StatefulWidget {
-  const PickerEmotion({super.key, required this.callback, required this.exclude});
-  final void Function(String) callback;
+import '../widgets/set_emotion_intensity_dialog.dart';
+
+class SetEmotionDialog extends StatefulWidget {
+  const SetEmotionDialog({
+    super.key,
+    required this.exclude,
+  });
   final List<String> exclude;
 
   @override
-  State<PickerEmotion> createState() => _PickerEmotionState();
+  State<SetEmotionDialog> createState() => _SetEmotionDialogState();
 }
 
-class _PickerEmotionState extends State<PickerEmotion> {
+class _SetEmotionDialogState extends State<SetEmotionDialog> {
   final _emotions = getIt.get<Emotions>();
   late final List<GlobalKey> _keys = _emotions.sections.map((section) => GlobalKey()).toList();
+
+  Future<void> _dialogBuilder(String name) async {
+    final router = GoRouter.of(context);
+    final intensity = await showDialog<int>(
+      context: context,
+      builder: (context)
+        => SetEmotionIntensityDialog(name: name),
+    );
+    if (intensity == null) return;
+    router.pop((name: name, intensity: intensity));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,31 +73,31 @@ class _PickerEmotionState extends State<PickerEmotion> {
                   automaticallyImplyLeading: false,
                   title: Text(section.section),
                 ),
-                SliverGrid(
+                SliverGrid.builder(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200.0,
                     mainAxisSpacing: 10.0,
                     crossAxisSpacing: 10.0,
                     childAspectRatio: 4.0,
                   ),
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      final name = section.list[index];
-                      final isExcluded = widget.exclude.contains(name);
-                      final btn = Container(
-                          alignment: Alignment.center,
-                          color: isExcluded ? Colors.grey : section.color,
-                          child: Text(name),
+                  itemCount: section.list.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final name = section.list[index];
+                    final isExcluded = widget.exclude.contains(name);
+                    final btn = Container(
+                      alignment: Alignment.center,
+                      color: isExcluded
+                        ? Colors.grey
+                        : section.color,
+                      child: Text(name),
+                    );
+                    return isExcluded
+                      ? btn
+                      : GestureDetector(
+                          onTap: () => _dialogBuilder(name),
+                          child: btn,
                         );
-                      return isExcluded
-                        ? btn
-                        : GestureDetector(
-                            onTap: () => widget.callback(name),
-                            child: btn,
-                          );
-                    },
-                    childCount: section.list.length,
-                  ),
+                  },
                 ),
               ]
             ),

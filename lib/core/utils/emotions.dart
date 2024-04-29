@@ -12,7 +12,12 @@ class Emotions {
     Map<String, EmotionDesc> map = {};
     for (final SectionEmotions section in _listEmotions) {
       for (final String emotion in section.list) {
-        map[emotion] = EmotionDesc(name: emotion, section: section.section, color: section.color);
+        map[emotion] = EmotionDesc(
+          name: emotion,
+          section: section.section,
+          color: section.color,
+          help: section.help,
+        );
       }
     }
     return map;
@@ -24,11 +29,14 @@ class SectionEmotions {
     required this.section,
     required this.color,
     required this.list,
+    required this.help,
   });
 
   final String section;
   
   final Color color;
+
+  final List<String> help;
   
   final List<String> list;
 }
@@ -38,6 +46,7 @@ class EmotionDesc {
     required this.name,
     required this.section,
     required this.color,
+    required this.help,
   });
 
   final String name;
@@ -45,12 +54,26 @@ class EmotionDesc {
   final String section;
   
   final Color color;
+
+  final List<String> help;
 }
 
 const _listEmotions = [
   SectionEmotions(
     section: 'Гнев',
     color: Colors.red,
+    help: [
+      'легкая усталость',
+      'чувство грусти',
+      'тяжесть во всем теле',
+      'слезы в глазах',
+      'ком в горле',
+      'губы дрожат',
+      'рыдание',
+      'ощущение глубокой тоски',
+      'эмоциональное измождение',
+      'желание умереть',
+    ],
     list: [
       'Бешенство',
       'Ярость',
@@ -73,6 +96,18 @@ const _listEmotions = [
   SectionEmotions(
     section: 'Страх',
     color: Colors.green,
+    help: [
+      'легкая усталость',
+      'чувство грусти',
+      'тяжесть во всем теле',
+      'слезы в глазах',
+      'ком в горле',
+      'губы дрожат',
+      'рыдание',
+      'ощущение глубокой тоски',
+      'эмоциональное измождение',
+      'желание умереть',
+    ],
     list: [
       'Ужас',
       'Отчаяние',
@@ -100,6 +135,18 @@ const _listEmotions = [
   SectionEmotions(
     section: 'Грусть',
     color: Colors.blue,
+    help: [
+      'легкая усталость',
+      'чувство грусти',
+      'тяжесть во всем теле',
+      'слезы в глазах',
+      'ком в горле',
+      'губы дрожат',
+      'рыдание',
+      'ощущение глубокой тоски',
+      'эмоциональное измождение',
+      'желание умереть',
+    ],
     list: [
       'Горечь',
       'Тоска',
@@ -123,6 +170,18 @@ const _listEmotions = [
   SectionEmotions(
     section: 'Радость',
     color: Colors.orange,
+    help: [
+      'легкая усталость',
+      'чувство грусти',
+      'тяжесть во всем теле',
+      'слезы в глазах',
+      'ком в горле',
+      'губы дрожат',
+      'рыдание',
+      'ощущение глубокой тоски',
+      'эмоциональное измождение',
+      'желание умереть',
+    ],
     list: [
       'Счастье',
       'Восторг',
@@ -148,6 +207,18 @@ const _listEmotions = [
   SectionEmotions(
     section: 'Любовь',
     color: Colors.pink,
+    help: [
+      'легкая усталость',
+      'чувство грусти',
+      'тяжесть во всем теле',
+      'слезы в глазах',
+      'ком в горле',
+      'губы дрожат',
+      'рыдание',
+      'ощущение глубокой тоски',
+      'эмоциональное измождение',
+      'желание умереть',
+    ],
     list: [
       'Нежность',
       'Теплота',

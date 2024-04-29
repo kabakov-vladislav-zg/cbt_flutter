@@ -11,13 +11,14 @@ part 'emotion.g.dart';
 class Emotion extends Equatable {
   Emotion({
     required this.name,
-    this.intensityFirst = 1,
+    int? intensityFirst,
     int? intensitySecond,
     String? uuid,
   }) :
-    intensitySecond = intensitySecond ?? intensityFirst,
+    intensityFirst = intensityFirst ?? 0,
+    intensitySecond = intensitySecond ?? intensityFirst ?? 0,
     _uuid = uuid ?? const Uuid().v1(),
-    assert(_isValidIntensity(intensityFirst)),
+    assert(_isValidIntensity(intensityFirst ?? 0)),
     assert(intensitySecond == null || _isValidIntensity(intensitySecond));
 
   final String name;

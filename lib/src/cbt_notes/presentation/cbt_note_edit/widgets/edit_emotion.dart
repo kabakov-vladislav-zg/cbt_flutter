@@ -74,7 +74,7 @@ class _EditEmotionState extends State<EditEmotion> {
               min: 0,
               max: _maxIntensity.toDouble(),
               onChanged: _onChanged,
-            )
+            ),
           ]
         ),
       ),

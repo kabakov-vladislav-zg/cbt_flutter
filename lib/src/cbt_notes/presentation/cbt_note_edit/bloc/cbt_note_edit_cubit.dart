@@ -60,9 +60,17 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     _emitCbtNote(thoughts: thoughts);
   }
 
-  void insertEmotion(String name) {
+  void insertEmotion({
+    required String name,
+    int? intensityFirst,
+    int? intensitySecond,
+  }) {
     final emotions = [...state.cbtNote.emotions];
-    emotions.add(Emotion(name: name));
+    emotions.add(Emotion(
+      name: name,
+      intensityFirst: intensityFirst,
+      intensitySecond: intensitySecond,
+    ));
     _emitCbtNote(emotions: emotions);
   }
 
