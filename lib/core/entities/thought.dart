@@ -11,12 +11,20 @@ part 'thought.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Thought extends Equatable {
   Thought({
-    this.description = '',
-    this.intermediate = const [],
-    this.conclusion = '',
-    this.corruption = '',
+    String? description,
+    List<String>? intermediate,
+    String? conclusion,
+    String? corruption,
     String? uuid,
-  }) : _uuid = uuid ?? const Uuid().v1();
+  }) :
+      description = description ?? '',
+      intermediate = intermediate ?? [],
+      conclusion = conclusion ?? '',
+      corruption = corruption ?? '',
+      _uuid = uuid ?? const Uuid().v1(),
+      isCreated = description?.trim().isNotEmpty ?? false,
+      isCompleted = [description, conclusion, corruption]
+        .indexWhere((item) => item?.trim().isEmpty ?? true) == -1;
 
   final String description;
 
@@ -27,6 +35,10 @@ class Thought extends Equatable {
   final String corruption;
 
   final String _uuid;
+
+  final bool isCreated;
+
+  final bool isCompleted;
 
   String get uuid => _uuid;
 

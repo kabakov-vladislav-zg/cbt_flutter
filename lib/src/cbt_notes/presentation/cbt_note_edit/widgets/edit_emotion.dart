@@ -1,8 +1,10 @@
 import 'package:cbt_flutter/core/entities/emotion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ui/ui.dart';
 
 import '../bloc/cbt_note_edit_cubit.dart';
+import '../widgets/set_emotion_intensity_dialog.dart';
 
 class EditEmotion extends StatefulWidget {
   const EditEmotion({
@@ -19,65 +21,78 @@ class EditEmotion extends StatefulWidget {
 }
 
 class _EditEmotionState extends State<EditEmotion> {
-  late final _index = widget.index;
-  final _maxIntensity = Emotion.maxIntensity;
-  late final CbtNoteEditCubit _cubit;
+  late final _cubit = context.read<CbtNoteEditCubit>();
 
-  @override
-  void initState() {
-    _cubit = context.read<CbtNoteEditCubit>();
-    super.initState();
-  }
-
-  void _onChanged(double value) {
-    final intensityFirst = value.toInt();
-    _cubit.updateEmotion(_index, intensityFirst: intensityFirst);
-  }
-
-  void _remove() {
-    _cubit.removeEmotion(_index);
+  Future<void> _dialogBuilder() async {
+    final name = widget.emotion.name;
+    final isCreation = _cubit.state.editStep == EditStep.creation;
+    final initIntensity = isCreation
+      ? widget.emotion.intensityFirst
+      : widget.emotion.intensitySecond;
+    final intensity = await showDialog<int>(
+      context: context,
+      builder: (context) =>
+        SetEmotionIntensityDialog(name: name, value: initIntensity),
+    );
+    if (intensity == null) return;
+    if (isCreation) {
+      _cubit.updateEmotion(widget.index, intensityFirst: intensity);
+    } else {
+      _cubit.updateEmotion(widget.index, intensitySecond: intensity);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(bottom: 16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              blurRadius: 4,
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(widget.emotion.name),
-                GestureDetector(
-                  onTap: _remove,
-                  child: const Icon(Icons.delete_outlined),
-                )
-              ],
+    return BlocSelector<CbtNoteEditCubit, CbtNoteEditState, EditStep>(
+      selector: (state) => state.editStep,
+      builder: (context, editStep) {
+        final isCreation = editStep == EditStep.creation;
+        final isEdit = editStep == EditStep.edit;
+        final buttonDelete = IconButton(
+          icon: const Icon(Icons.delete_outlined),
+          onPressed: () {
+            _cubit.removeEmotion(widget.index);
+          },
+        );
+        return Card(
+          clipBehavior: Clip.hardEdge,
+          child: InkWell(
+            onTap: isEdit ? null : _dialogBuilder,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  ListTile(
+                    dense: true,
+                    contentPadding: const EdgeInsets.all(0),
+                    title: Text(widget.emotion.name),
+                    trailing: isCreation || isEdit || widget.emotion.intensityFirst == 0
+                      ? buttonDelete
+                      : null,
+                  ),
+                  UISlider(
+                    label: 'Изначальная интенсивность',
+                    max: Emotion.maxIntensity,
+                    value: widget.emotion.intensityFirst,
+                    readOnly: !(isCreation || isEdit),
+                    onChanged: (value) =>
+                      _cubit.updateEmotion(widget.index, intensityFirst: value),
+                  ),
+                  if (!isCreation)
+                    UISlider(
+                      label: 'Интенсивность после проработки',
+                      max: Emotion.maxIntensity,
+                      value: widget.emotion.intensitySecond,
+                      onChanged: (value) =>
+                        _cubit.updateEmotion(widget.index, intensitySecond: value),
+                    ),
+                ],
+              ),
             ),
-            Slider(
-              label: widget.emotion.intensityFirst.toString(),
-              value: widget.emotion.intensityFirst.toDouble(),
-              divisions: _maxIntensity,
-              min: 0,
-              max: _maxIntensity.toDouble(),
-              onChanged: _onChanged,
-            ),
-          ]
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

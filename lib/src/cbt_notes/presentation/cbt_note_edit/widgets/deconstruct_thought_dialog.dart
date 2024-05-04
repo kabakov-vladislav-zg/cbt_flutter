@@ -1,5 +1,4 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
-import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:cbt_flutter/src/cbt_notes/presentation/cbt_note_edit/widgets/set_corruption_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,16 +11,13 @@ import '../bloc/cbt_note_edit_cubit.dart';
 class DeconstructThoughtDialog extends StatelessWidget {
   const DeconstructThoughtDialog({
     super.key,
-    required this.thought,
     required this.index,
   });
 
-  final Thought thought;
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<CbtNoteEditCubit>();
     return Dialog.fullscreen(
       child: CustomScrollView(slivers: [
         const SliverAppBar(
@@ -30,75 +26,78 @@ class DeconstructThoughtDialog extends StatelessWidget {
         ),
         SliverPadding(
           padding: const EdgeInsets.all(16),
-          sliver: SliverMainAxisGroup(slivers: [
-            const SliverToBoxAdapter(
-              child: Text('Изначальная мысль'),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: UITextField(
-                  readOnly: true,
-                  maxLines: null,
-                  value: thought.description,
+          sliver: BlocBuilder<CbtNoteEditCubit, CbtNoteEditState>(
+            builder: (context, state) {
+              final update = context
+                .read<CbtNoteEditCubit>()
+                .updateThought;
+              final thought = state.cbtNote.thoughts[index];
+              return SliverMainAxisGroup(slivers: [
+                const SliverToBoxAdapter(
+                  child: Text('Изначальная мысль'),
                 ),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: Text('Промежуточные мысли (необязательно)'),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.only(bottom: 24),
-              sliver: SliverTextFieldList(
-                items: thought.intermediate,
-                onChange: (intermediate) =>
-                    cubit.updateThought(index, intermediate: intermediate),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: Text('Когнктивное искажение'),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: BlocSelector<CbtNoteEditCubit, CbtNoteEditState, String>(
-                  selector: (state) {
-                    return state.cbtNote.thoughts[index].corruption;
-                  },
-                  builder: (context, corruption) {
-                    return UITextField(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: UITextField(
+                      readOnly: state.editStep != EditStep.edit,
+                      maxLines: null,
+                      value: thought.description,
+                      onChanged: (value) =>
+                        update(index, description: value),
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Text('Промежуточные мысли (необязательно)'),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  sliver: SliverTextFieldList(
+                    items: thought.intermediate,
+                    onChange: (value) =>
+                      update(index, intermediate: value),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Text('Когнктивное искажение'),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: UITextField(
                       readOnly: true,
                       maxLines: null,
                       onTap: () => _dialogBuilder(context, index),
-                      value: corruption,
-                      onChanged: (corruption) =>
-                          cubit.updateThought(index, corruption: corruption),
-                    );
-                  },
+                      value: thought.corruption,
+                      onChanged: (value) =>
+                        update(index, corruption: value),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: Text('Рациональный ответ'),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: UITextField(
-                  value: thought.conclusion,
-                  maxLines: null,
-                  onChanged: (conclusion) =>
-                      cubit.updateThought(index, conclusion: conclusion),
+                const SliverToBoxAdapter(
+                  child: Text('Рациональный ответ'),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Btn(onPressed: () => context.pop(), text: 'готово'),
-              ),
-            ),
-          ]),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: UITextField(
+                      value: thought.conclusion,
+                      maxLines: null,
+                      onChanged: (value) =>
+                        update(index, conclusion: value),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: Btn(onPressed: () => context.pop(), text: 'готово'),
+                  ),
+                ),
+              ]);
+            },
+          ),
         ),
       ]),
     );

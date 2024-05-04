@@ -9,12 +9,11 @@ import '../../cbt_notes_overview/views/cbt_notes_overview_page.dart';
 import './cbt_note_edit_emotions.dart';
 import './cbt_note_edit_trigger.dart';
 import './cbt_note_edit_thoughts.dart';
-import '../widgets/menu_step.dart';
 
 enum EditPage {
-  trigger(title: 'триггер'),
-  thoughts(title: 'мысли'),
-  emotions(title: 'эмоции');
+  trigger(title: 'Событие'),
+  thoughts(title: 'Автоматические мысли'),
+  emotions(title: 'Эмоции');
 
   const EditPage({
     required this.title,
@@ -119,9 +118,6 @@ class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin
     return Scaffold(
       appBar: AppBar(
         title: Text(EditPage.values[_index].title),
-        actions: const [
-          MenuStep(),
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _next,

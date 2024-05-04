@@ -26,10 +26,30 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     _emitCbtNote(trigger: trigger);
   }
 
-  void insertThought() {
-    final thoughts = [...state.cbtNote.thoughts];
-    thoughts.add(Thought());
+  void insertThoughtList(List<String> list) {
+    final thoughts = list
+      .map((description)
+        => Thought(description: description))
+      .toList();
     _emitCbtNote(thoughts: thoughts);
+  }
+
+  ({int index, Thought thought}) insertThought({
+    String? description,
+    List<String>? intermediate,
+    String? conclusion,
+    String? corruption,
+  }) {
+    final thoughts = [...state.cbtNote.thoughts];
+    final thought = Thought(
+      description: description,
+      intermediate: intermediate,
+      conclusion: conclusion,
+      corruption: corruption,
+    );
+    thoughts.add(thought);
+    _emitCbtNote(thoughts: thoughts);
+    return (index: thoughts.length, thought: thought);
   }
 
   void updateThought(int index, {
@@ -60,18 +80,20 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     _emitCbtNote(thoughts: thoughts);
   }
 
-  void insertEmotion({
+  ({int index, Emotion emotion}) insertEmotion({
     required String name,
     int? intensityFirst,
     int? intensitySecond,
   }) {
     final emotions = [...state.cbtNote.emotions];
-    emotions.add(Emotion(
+    final emotion = Emotion(
       name: name,
       intensityFirst: intensityFirst,
       intensitySecond: intensitySecond,
-    ));
+    );
+    emotions.add(emotion);
     _emitCbtNote(emotions: emotions);
+    return (index: emotions.length, emotion: emotion);
   }
 
   void updateEmotion(int index, {
@@ -163,11 +185,7 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
   bool isCompleted() {
     final thoughts = state.cbtNote.thoughts;
     if(!isCreated()) return false;
-    final index = thoughts.indexWhere((thought) {
-      return thought.conclusion.isEmpty
-        || thought.corruption.isEmpty;
-    });
-    if(index > -1) return false;
-    return true;
+    return -1 == thoughts
+      .indexWhere((thought) => !thought.isCompleted);
   }
 }

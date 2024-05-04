@@ -7,24 +7,13 @@ import '../bloc/cbt_note_edit_cubit.dart';
 import '../widgets/edit_emotion.dart';
 import '../widgets/set_emotion_dialog.dart';
 
-class CbtNoteEditEmotions extends StatefulWidget {
+class CbtNoteEditEmotions extends StatelessWidget {
   const CbtNoteEditEmotions({super.key});
 
-  @override
-  State<CbtNoteEditEmotions> createState() => _CbtNoteEditEmotionsState();
-}
-
-class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
-  late final CbtNoteEditCubit _cubit;
-
-  @override
-  void initState() {
-    _cubit = context.read<CbtNoteEditCubit>();
-    super.initState();
-  }
-
-  Future<void> _dialogBuilder() async {
-    final emotions = _cubit.state.cbtNote.emotions;
+  Future<void> _dialogBuilder(BuildContext context) async {
+    final cubit = context.read<CbtNoteEditCubit>();
+    final emotions = cubit.state.cbtNote.emotions;
+    final editStep = cubit.state.editStep;
     final exclude = emotions.map((emotion) => emotion.name).toList();
     final record = await showDialog<({
       String name,
@@ -35,9 +24,12 @@ class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
         => SetEmotionDialog(exclude: exclude),
     );
     if (record == null) return;
-    _cubit.insertEmotion(
+    cubit.insertEmotion(
       name: record.name,
-      intensityFirst: record.intensity,
+      intensityFirst: editStep == EditStep.creation
+        ? record.intensity
+        : 0,
+      intensitySecond: record.intensity,
     );
   }
 
@@ -53,10 +45,13 @@ class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
               SliverList.builder(
                 itemCount: emotions.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return EditEmotion(
-                    key: Key(emotions[index].name),
-                    emotion: emotions[index],
-                    index: index,
+                  return Padding(
+                    padding: const EdgeInsetsDirectional.only(bottom: 16),
+                    child: EditEmotion(
+                      key: Key(emotions[index].name),
+                      emotion: emotions[index],
+                      index: index,
+                    ),
                   );
                 },
               ),
@@ -64,12 +59,12 @@ class _CbtNoteEditEmotionsState extends State<CbtNoteEditEmotions> {
                 child: SizedBox(
                   height: 60,
                   child: Btn(
-                    onPressed: _dialogBuilder,
+                    onPressed: () => _dialogBuilder(context),
                     text: 'добавить',
                     block: true,
                   ),
                 ),
-              )
+              ),
             ]
           ),
         );

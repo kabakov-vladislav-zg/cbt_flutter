@@ -1,6 +1,6 @@
 part of 'cbt_note_edit_cubit.dart';
 
-enum EditStep { creation, deconstruction, viewing }
+enum EditStep { creation, deconstruction, viewing, edit }
 
 @immutable
 class CbtNoteEditState extends Equatable {

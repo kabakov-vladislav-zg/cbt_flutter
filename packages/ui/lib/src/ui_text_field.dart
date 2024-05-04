@@ -6,7 +6,10 @@ class UITextField extends StatefulWidget {
     super.key,
     this.controller,
     this.focusNode,
-    this.value = '',
+    this.hintText,
+    this.value,
+    this.expands = false,
+    this.autofocus = false,
     this.onChanged,
     this.onFocus,
     this.onBlur,
@@ -16,14 +19,13 @@ class UITextField extends StatefulWidget {
     this.onEditingComplete,
     this.readOnly = false,
     this.clearable = false,
-    this.decoration,
     this.keyboardType,
     this.maxLines = 1,
   });
 
   final TextEditingController? controller;
   final FocusNode? focusNode;
-  final String value;
+  final String? value;
   final void Function(String)? onChanged;
   final void Function()? onEditingComplete;
   final VoidCallback? onTap;
@@ -34,24 +36,41 @@ class UITextField extends StatefulWidget {
   final bool readOnly;
   final bool clearable;
   final int? maxLines;
+  final bool expands;
+  final bool autofocus;
+  final String? hintText;
   final TextInputType? keyboardType;
-  final InputDecoration? decoration;
 
   @override
   State<UITextField> createState() => UITextFieldState();
 }
 
 class UITextFieldState extends State<UITextField> {
-  late final TextEditingController _textController;
   late final FocusNode _focusNode;
   bool _hasFocus = false;
   bool get hasFocus => _hasFocus;
+  void requestFocus() => _focusNode.requestFocus();
+
+  late final TextEditingController _textController;
+  String get _text => _textController.text;
+  set _text(String value) => _textController.text = value;
+  int get selection => _textController.selection.start;
+  set selection(int selection) {
+    final length = _text.length;
+    final offset = selection > length ? length : selection;
+    _textController.selection = TextSelection.collapsed(offset: offset);
+  }
+  bool get isEmpty => _text.trim().isEmpty;
+  bool get isNotEmpty => _text.trim().isNotEmpty;
 
   @override
   void initState() {
     _textController = widget.controller ?? TextEditingController();
+    if (widget.value != null) {
+      _textController.text = widget.value!;
+    }
+
     _focusNode = widget.focusNode ?? FocusNode();
-    _textController.text = widget.value;
     _focusNode.addListener(_onFocusChanged);
     if (widget.onBackspace != null) {
       _focusNode.onKeyEvent = _onBackspace;
@@ -61,9 +80,9 @@ class UITextFieldState extends State<UITextField> {
 
   @override
   void didUpdateWidget(covariant UITextField oldWidget) {
-    if (_text != widget.value) {
+    if (widget.value != null && widget.value != _text) {
       final currentSelection = selection;
-      _text = widget.value;
+      _text = widget.value!;
       if (_hasFocus) {
         selection = currentSelection;
       }
@@ -77,21 +96,6 @@ class UITextFieldState extends State<UITextField> {
     _focusNode.dispose();
     super.dispose();
   }
-
-  void requestFocus() => _focusNode.requestFocus();
-  
-  String get _text => _textController.text;
-  set _text(String value) => _textController.text = value;
-
-  int get selection => _textController.selection.start;
-  set selection(int selection) {
-    final length = _text.length;
-    final offset = selection > length ? length : selection;
-    _textController.selection = TextSelection.collapsed(offset: offset);
-  }
-
-  bool get isEmpty => _text.trim().isEmpty;
-  bool get isNotEmpty => _text.trim().isNotEmpty;
 
   KeyEventResult _onBackspace(FocusNode node, KeyEvent event) {
     final isBackspace = event.logicalKey == LogicalKeyboardKey.backspace;
@@ -137,8 +141,14 @@ class UITextFieldState extends State<UITextField> {
       onChanged: widget.onChanged,
       onTap: widget.onTap,
       onEditingComplete: widget.onEditingComplete,
+      onTapOutside: (_) => _focusNode.unfocus(),
       readOnly: widget.readOnly,
+      maxLines: widget.maxLines,
+      keyboardType: widget.keyboardType,
+      expands: widget.expands,
+      autofocus: widget.autofocus,
       decoration: InputDecoration(
+        isCollapsed: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
         suffixIcon: Visibility(
           visible: _hasFocus && widget.clearable,
@@ -154,9 +164,12 @@ class UITextFieldState extends State<UITextField> {
         ),
         enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        hintText: widget.hintText,
+        hintStyle: TextStyle(
+          fontWeight: FontWeight.normal,
+          color: Colors.grey.shade400,
+        ),
       ),
-      maxLines: widget.maxLines,
-      keyboardType: widget.keyboardType,
     );
   }
 }
