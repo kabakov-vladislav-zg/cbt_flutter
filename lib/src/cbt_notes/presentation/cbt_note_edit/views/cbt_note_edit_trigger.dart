@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../bloc/cbt_note_edit_cubit.dart';
+import '../utils/debounce.dart';
 
 class CbtNoteEditTrigger extends StatelessWidget {
   const CbtNoteEditTrigger({
@@ -32,10 +33,19 @@ class CbtNoteEditTrigger extends StatelessWidget {
                   readOnly: !(isCreation || isEdit),
                   hintText: 'Опишите произошедшее событие',
                   onEditingComplete: onEditingComplete,
+                  onBlur: (value) {
+                    debounce(() {
+                      context
+                        .read<CbtNoteEditCubit>()
+                        .updateTrigger(value);
+                    });
+                  },
                   onChanged: (value) {
-                    context
-                      .read<CbtNoteEditCubit>()
-                      .updateTrigger(value);
+                    debounce(() {
+                      context
+                        .read<CbtNoteEditCubit>()
+                        .updateTrigger(value);
+                    }, debounced: true);
                   },
                 );
               },

@@ -1,7 +1,8 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
-import 'package:cbt_flutter/src/cbt_notes/data/cbt_notes_repo.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/get_cbt_notes_stream.dart';
 import 'package:cbt_flutter/src/cbt_notes/domain/remowe_cbt_note.dart';
 import 'package:cbt_flutter/src/cbt_notes/domain/insert_cbt_note.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/update_cbt_notes_stream.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
@@ -14,11 +15,13 @@ part 'cbt_notes_overview_event.dart';
 class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewState> {
   @factoryMethod
   CbtNotesOverviewBloc({
-    required CbtNotesRepo cbtNotesRepo,
+    required UpdateCbtNotesStream updateCbtNotesStream,
+    required GetCbtNotesStream getCbtNotesStream,
     required InsertCbtNote insertCbtNote,
     required RemoveCbtNote removeCbtNote,
   }) : 
-    _cbtNotesRepo = cbtNotesRepo,
+    _updateCbtNotesStream = updateCbtNotesStream,
+    _getCbtNotesStream = getCbtNotesStream,
     _insertCbtNote = insertCbtNote,
     _removeCbtNote = removeCbtNote,
     super(const CbtNotesOverviewState()) {
@@ -27,7 +30,8 @@ class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewS
       on<CbtNotesOverviewRemove>(_removeNote);
     }
   
-  final CbtNotesRepo _cbtNotesRepo;
+  final UpdateCbtNotesStream _updateCbtNotesStream;
+  final GetCbtNotesStream _getCbtNotesStream;
   final InsertCbtNote _insertCbtNote;
   final RemoveCbtNote _removeCbtNote;
 
@@ -36,7 +40,7 @@ class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewS
     Emitter<CbtNotesOverviewState> emit,
   ) async {
     await emit.forEach<List<CbtNote>>(
-      await _cbtNotesRepo.getCbtNotesStream(),
+      await _getCbtNotesStream(),
       onData: (list) => state.copyWith(list: list),
     );
   }
@@ -47,13 +51,15 @@ class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewS
   ) async {
     final list = [...state.list];
     list.add(event.cbtNote);
-    _insertCbtNote(event.cbtNote);
+    await _insertCbtNote(event.cbtNote);
+    await _updateCbtNotesStream();
   }
 
   Future<void> _removeNote(
     CbtNotesOverviewRemove event,
     Emitter<CbtNotesOverviewState> emit,
   ) async {
-    _removeCbtNote(event.uuid);
+    await _removeCbtNote(event.uuid);
+    await _updateCbtNotesStream();
   }
 }

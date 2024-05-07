@@ -4,12 +4,14 @@ import 'package:ui/ui.dart';
 class SliverTextFieldList extends StatefulWidget {
   const SliverTextFieldList({
     super.key,
-    required this.items,
-    required this.onChange,
+    required this.value,
+    required this.onChanged,
+    this.onChangeEnd,
   });
 
-  final List<String> items;
-  final void Function(List<String> items) onChange;
+  final List<String> value;
+  final void Function(List<String>) onChanged;
+  final void Function(List<String>)? onChangeEnd;
 
   @override
   State<SliverTextFieldList> createState() => _SliverTextFieldListState();
@@ -17,9 +19,9 @@ class SliverTextFieldList extends StatefulWidget {
 
 class _SliverTextFieldListState extends State<SliverTextFieldList> {
   final _getKey = _GetKey<UITextFieldState>();
-  late final List<String> _items = widget.items.isEmpty
+  late final List<String> _items = widget.value.isEmpty
     ? ['']
-    : [...widget.items];
+    : [...widget.value];
 
   void _onDelete(int index) {
     setState(() {
@@ -34,7 +36,11 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
       nextItem!.requestFocus();
       nextItem.selection = double.maxFinite.toInt();
     });
-    _emit();
+    if (widget.onChangeEnd != null) {
+      widget.onChangeEnd!(_getValue());
+    } else {
+      widget.onChanged(_getValue());
+    }
   }
 
   void _onEditingComplete(int index) {
@@ -69,7 +75,7 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
         nextItem!.selection = 0;
       });
     }
-    _emit();
+    widget.onChanged(_getValue());
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -82,14 +88,18 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
         _items.removeAt(oldIndex),
       );
     });
-    _emit();
+    if (widget.onChangeEnd != null) {
+      widget.onChangeEnd!(_getValue());
+    } else {
+      widget.onChanged(_getValue());
+    }
   }
 
   void _onChanged(int index, String value) {
     setState(() {
       _items[index] = value;
     });
-    _emit();
+    widget.onChanged(_getValue());
   }
 
   void _onBackspace(int index) {
@@ -118,11 +128,13 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
         setState(() {
           _items[prevIndex] = prevText;
         });
-        prevItem.requestFocus();
-        prevItem.selection = offset;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          prevItem.requestFocus();
+          prevItem.selection = offset;
+        });
       }
     }
-    _emit();
+    widget.onChanged(_getValue());
   }
 
   void _addItem() {
@@ -140,14 +152,14 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
     return _getKey(index).currentState;
   }
 
-  void _emit() {
+  List<String> _getValue() {
     final List<String> items = [];
     for (final item in _items) {
       if (item.trim().isNotEmpty) {
         items.add(item);
       }
     }
-    widget.onChange(items);
+    return items;
   }
 
   @override
@@ -178,6 +190,9 @@ class _SliverTextFieldListState extends State<SliverTextFieldList> {
                       onEditingComplete: () => _onEditingComplete(index),
                       onBackspace: () => _onBackspace(index),
                       onDelete: () => _onDelete(index),
+                      onTapOutside: widget.onChangeEnd == null
+                        ? null
+                        : () => widget.onChangeEnd!(_getValue()),
                       maxLines: null,
                       clearable: clearable,
                       keyboardType: TextInputType.text,

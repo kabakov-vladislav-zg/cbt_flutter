@@ -5,34 +5,35 @@ import 'package:rxdart/subjects.dart';
 
 @singleton
 class CbtNotesRepo {
-  CbtNotesRepo({required CbtNotesApi cbtNotesApi}) : _cbtNotesApi = cbtNotesApi;
+  CbtNotesRepo({
+    required CbtNotesApi cbtNotesApi,
+  }) : _cbtNotesApi = cbtNotesApi;
 
   final CbtNotesApi _cbtNotesApi;
 
-  late BehaviorSubject<List<CbtNote>> _streamController;
+  late final BehaviorSubject<List<CbtNote>> _streamController;
 
   Future<Stream<List<CbtNote>>> getCbtNotesStream() async {
-    final list = await getCbtNotes();
+    final list = await _getCbtNotes();
     _streamController = BehaviorSubject<List<CbtNote>>.seeded(list);
     return _streamController.asBroadcastStream();
+  }
+
+  Future<void> updateCbtNotesStream() async {
+    final list = await _getCbtNotes();
+    _streamController.add(list);
   }
   
   Future<void> insertCbtNote(CbtNote cbtNote) async {
     await _cbtNotesApi.insertCbtNote(cbtNote);
-    final list = await getCbtNotes();
-    _streamController.add(list);
   }
   Future<void> updateCbtNote(CbtNote cbtNote) async {
     await _cbtNotesApi.updateCbtNote(cbtNote);
-    final list = await getCbtNotes();
-    _streamController.add(list);
   }
   Future<void> removeCbtNote(String uuid) async {
     await _cbtNotesApi.deleteCbtNote(uuid);
-    final list = await getCbtNotes();
-    _streamController.add(list);
   }
-  Future<List<CbtNote>> getCbtNotes() async {
+  Future<List<CbtNote>> _getCbtNotes() async {
     return _cbtNotesApi.getCbtNotes();
   }
 }

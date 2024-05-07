@@ -21,7 +21,7 @@ class SetEmotionIntensityDialog extends StatefulWidget {
 
 class _SetEmotionIntensityDialogState extends State<SetEmotionIntensityDialog> {
   late final EmotionDesc _emotion;
-  int _value = 0;
+  late int _value;
 
   @override
   void initState() {

@@ -70,7 +70,7 @@ class _CbtNoteEditState extends State<CbtNoteEdit> with TickerProviderStateMixin
   void dispose() {
     _tabController.removeListener(_changed);
     _tabController.dispose();
-    _cubit.syncChanges();
+    // _cubit.syncChanges();
     super.dispose();
   }
 

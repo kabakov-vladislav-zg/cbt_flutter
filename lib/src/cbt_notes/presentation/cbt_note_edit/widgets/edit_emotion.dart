@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 
 import '../bloc/cbt_note_edit_cubit.dart';
 import '../widgets/set_emotion_intensity_dialog.dart';
+import '../utils/debounce.dart';
 
 class EditEmotion extends StatefulWidget {
   const EditEmotion({
@@ -22,6 +23,7 @@ class EditEmotion extends StatefulWidget {
 
 class _EditEmotionState extends State<EditEmotion> {
   late final _cubit = context.read<CbtNoteEditCubit>();
+  late final _updateEmotion = _cubit.updateEmotion;
 
   Future<void> _dialogBuilder() async {
     final name = widget.emotion.name;
@@ -36,9 +38,9 @@ class _EditEmotionState extends State<EditEmotion> {
     );
     if (intensity == null) return;
     if (isCreation) {
-      _cubit.updateEmotion(widget.index, intensityFirst: intensity);
+      _updateEmotion(widget.index, intensityFirst: intensity);
     } else {
-      _cubit.updateEmotion(widget.index, intensitySecond: intensity);
+      _updateEmotion(widget.index, intensitySecond: intensity);
     }
   }
 
@@ -55,6 +57,7 @@ class _EditEmotionState extends State<EditEmotion> {
             _cubit.removeEmotion(widget.index);
           },
         );
+        
         return Card(
           clipBehavior: Clip.hardEdge,
           child: InkWell(
@@ -76,16 +79,32 @@ class _EditEmotionState extends State<EditEmotion> {
                     max: Emotion.maxIntensity,
                     value: widget.emotion.intensityFirst,
                     readOnly: !(isCreation || isEdit),
-                    onChanged: (value) =>
-                      _cubit.updateEmotion(widget.index, intensityFirst: value),
+                    onChanged: (value) {
+                      debounce(() {
+                        _updateEmotion(widget.index, intensityFirst: value);
+                      }, debounced: true);
+                    },
+                    onChangeEnd: (value) {
+                      debounce(() {
+                        _updateEmotion(widget.index, intensityFirst: value);
+                      });
+                    },
                   ),
                   if (!isCreation)
                     UISlider(
                       label: 'Интенсивность после проработки',
                       max: Emotion.maxIntensity,
                       value: widget.emotion.intensitySecond,
-                      onChanged: (value) =>
-                        _cubit.updateEmotion(widget.index, intensitySecond: value),
+                      onChanged: (value) {
+                        debounce(() {
+                          _updateEmotion(widget.index, intensitySecond: value);
+                        }, debounced: true);
+                      },
+                      onChangeEnd: (value) {
+                        debounce(() {
+                          _updateEmotion(widget.index, intensitySecond: value);
+                        });
+                      },
                     ),
                 ],
               ),

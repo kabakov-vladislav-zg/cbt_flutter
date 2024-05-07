@@ -2,7 +2,7 @@ import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:cbt_flutter/src/cbt_notes/domain/update_cbt_note.dart';
-import 'package:easy_debounce/easy_debounce.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/update_cbt_notes_stream.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -15,11 +15,14 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
   @factoryMethod
   CbtNoteEditCubit(@factoryParam CbtNote cbtNote, {
     required UpdateCbtNote updateCbtNote,
+    required UpdateCbtNotesStream updateCbtNotesStream,
   }) :
     _updateCbtNote = updateCbtNote,
+    _updateCbtNotesStream = updateCbtNotesStream,
     super(CbtNoteEditState(cbtNote: cbtNote));
     
   final UpdateCbtNote _updateCbtNote;
+  final UpdateCbtNotesStream _updateCbtNotesStream;
   static const debouncerTag = 'ThrottledUpdateCbtNote';
 
   void updateTrigger(String trigger) {
@@ -116,27 +119,14 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     _emitCbtNote(emotions: emotions);
   }
 
-  void syncChanges({ bool debounced = false }) {
-    final cbtNote = state.cbtNote;
-    if(debounced) {
-      EasyDebounce.debounce(
-        debouncerTag,
-        const Duration(seconds: 2),
-        () => _updateCbtNote(cbtNote)
-      );
-    } else {
-      EasyDebounce.cancel(debouncerTag);
-      _updateCbtNote(cbtNote);
-    }
-  }
-
-  void _emitCbtNote({
+  Future<void> _emitCbtNote({
     String? trigger,
     List<Thought>? thoughts,
     List<Emotion>? emotions,
     bool? isCreated,
     bool? isCompleted,
-  }) {
+  }) async {
+    print('_emitCbtNote');
     final cbtNote = state.cbtNote.copyWith(
       trigger: trigger,
       thoughts: thoughts,
@@ -145,7 +135,8 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
       isCompleted: isCompleted,
     );
     emit(state.copyWith(cbtNote: cbtNote));
-    syncChanges(debounced: true);
+    await _updateCbtNote(cbtNote);
+    await _updateCbtNotesStream();
   }
 
   void setStep(EditStep step) {

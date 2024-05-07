@@ -1,4 +1,5 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
+import 'package:cbt_flutter/src/cbt_notes/presentation/cbt_note_edit/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sliver_text_field_list/sliver_text_field_list.dart';
@@ -38,12 +39,21 @@ class CbtNoteEditThoughts extends StatelessWidget {
               final items = thoughts
                 .map((thought) => thought.description)
                 .toList();
+              final insertThoughtList = context
+                .read<CbtNoteEditCubit>()
+                .insertThoughtList;
               return SliverTextFieldList(
-                items: items,
-                onChange: (list) =>
-                  context
-                    .read<CbtNoteEditCubit>()
-                    .insertThoughtList(list),
+                value: items,
+                onChanged: (value) {
+                  debounce(() {
+                    insertThoughtList(value);
+                  }, debounced: true);
+                },
+                onChangeEnd: (value) {
+                  debounce(() {
+                    insertThoughtList(value);
+                  });
+                },
               );
             } else {
               return SliverMainAxisGroup(

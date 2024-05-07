@@ -1,4 +1,5 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
+import 'package:cbt_flutter/src/cbt_notes/presentation/cbt_note_edit/utils/debounce.dart';
 import 'package:cbt_flutter/src/cbt_notes/presentation/cbt_note_edit/widgets/set_corruption_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,8 +44,16 @@ class DeconstructThoughtDialog extends StatelessWidget {
                       readOnly: state.editStep != EditStep.edit,
                       maxLines: null,
                       value: thought.description,
-                      onChanged: (value) =>
-                        update(index, description: value),
+                      onChanged: (value) {
+                        debounce(() {
+                          update(index, description: value);
+                        }, debounced: true);
+                      },
+                      onBlur: (value) {
+                        debounce(() {
+                          update(index, description: value);
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -54,9 +63,17 @@ class DeconstructThoughtDialog extends StatelessWidget {
                 SliverPadding(
                   padding: const EdgeInsets.only(bottom: 24),
                   sliver: SliverTextFieldList(
-                    items: thought.intermediate,
-                    onChange: (value) =>
-                      update(index, intermediate: value),
+                    value: thought.intermediate,
+                    onChanged: (value) {
+                      debounce(() {
+                        update(index, intermediate: value);
+                      }, debounced: true);
+                    },
+                    onChangeEnd: (value) {
+                      debounce(() {
+                        update(index, intermediate: value);
+                      });
+                    },
                   ),
                 ),
                 const SliverToBoxAdapter(
@@ -84,8 +101,16 @@ class DeconstructThoughtDialog extends StatelessWidget {
                     child: UITextField(
                       value: thought.conclusion,
                       maxLines: null,
-                      onChanged: (value) =>
-                        update(index, conclusion: value),
+                      onChanged: (value) {
+                        debounce(() {
+                          update(index, conclusion: value);
+                        }, debounced: true);
+                      },
+                      onBlur: (value) {
+                        debounce(() {
+                          update(index, conclusion: value);
+                        });
+                      },
                     ),
                   ),
                 ),

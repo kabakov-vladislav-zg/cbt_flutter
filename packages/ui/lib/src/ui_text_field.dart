@@ -14,6 +14,7 @@ class UITextField extends StatefulWidget {
     this.onFocus,
     this.onBlur,
     this.onTap,
+    this.onTapOutside,
     this.onBackspace,
     this.onDelete,
     this.onEditingComplete,
@@ -29,8 +30,9 @@ class UITextField extends StatefulWidget {
   final void Function(String)? onChanged;
   final void Function()? onEditingComplete;
   final VoidCallback? onTap;
-  final VoidCallback? onFocus;
-  final VoidCallback? onBlur;
+  final void Function(String)? onFocus;
+  final void Function(String)? onBlur;
+  final VoidCallback? onTapOutside;
   final VoidCallback? onBackspace;
   final VoidCallback? onDelete;
   final bool readOnly;
@@ -110,14 +112,12 @@ class UITextFieldState extends State<UITextField> {
       setState(() {
         _hasFocus = true;
       });
-      if (widget.onFocus == null) return;
-      widget.onFocus!();
+      widget.onFocus?.call(_text);
     } else {
       setState(() {
         _hasFocus = false;
       });
-      if (widget.onBlur == null) return;
-      widget.onBlur!();
+      widget.onBlur?.call(_text);
     }
   }
 
@@ -133,6 +133,11 @@ class UITextFieldState extends State<UITextField> {
     }
   }
 
+  void _onTapOutside(PointerDownEvent e) {
+    _focusNode.unfocus();
+    widget.onTapOutside?.call();
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -141,7 +146,7 @@ class UITextFieldState extends State<UITextField> {
       onChanged: widget.onChanged,
       onTap: widget.onTap,
       onEditingComplete: widget.onEditingComplete,
-      onTapOutside: (_) => _focusNode.unfocus(),
+      onTapOutside: _onTapOutside,
       readOnly: widget.readOnly,
       maxLines: widget.maxLines,
       keyboardType: widget.keyboardType,

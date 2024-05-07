@@ -1,36 +1,73 @@
 import 'package:flutter/material.dart';
 
-class UISlider extends StatelessWidget {
+class UISlider extends StatefulWidget {
   const UISlider({
     super.key,
     this.label,
-    required this.value,
-    this.onChanged,
+    this.value,
+    this.initValue,
+    required this.onChanged,
+    this.onChangeEnd,
     this.actions,
     this.max = 10,
     this.readOnly = false,
-  }) : divisions = max;
-  final int value;
+  }) :
+    divisions = max,
+    assert(value == null || initValue == null);
+  final int? value;
+  final int? initValue;
   final int max;
   final int divisions;
   final String? label;
   final List<Widget>? actions;
   final bool readOnly;
-  final void Function(int)? onChanged;
+  final void Function(int) onChanged;
+  final void Function(int)? onChangeEnd;
+  @override
+  State<UISlider> createState() => _UISliderState();
+}
+
+class _UISliderState extends State<UISlider> {
+  late final _initValue =  widget.initValue;
+  late int _value = widget.value ?? _initValue ?? 0;
+
+  int get value => _value;
+  set value (int value) {
+    _value = value;
+    widget.onChangeEnd?.call(_value);
+  }
+
+  @override
+  void didUpdateWidget(covariant UISlider oldWidget) {
+    final value = widget.value;
+
+    if (_initValue != null) {
+      assert(value == null);
+      return;
+    }
+    assert(value != null);
+
+    if (value! != oldWidget.value) {
+      setState(() {
+        _value = value;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label != null || actions != null)
+        if (widget.label != null || widget.actions != null)
           Row(
             children: [
-              if (label != null)
-                Text(label!),
+              if (widget.label != null)
+                Text(widget.label!),
               const Spacer(),
-              if (actions != null)
-                Row(children: actions!)
+              if (widget.actions != null)
+                Row(children: widget.actions!)
             ],
           ),
         Padding(
@@ -42,18 +79,24 @@ class UISlider extends StatelessWidget {
               overlayShape: const CustomSliderOverlayShape(),
             ),
             child: Opacity(
-              opacity: readOnly ? .25 : 1,
+              opacity: widget.readOnly ? .25 : 1,
               child: IgnorePointer(
-                ignoring: readOnly,
+                ignoring: widget.readOnly,
                 child: Slider(
-                  label: value.toString(),
-                  value: value.toDouble(),
-                  divisions: divisions,
+                  label: _value.toString(),
+                  value: _value.toDouble(),
+                  divisions: widget.divisions,
                   min: 0,
-                  max: max.toDouble(),
-                  onChanged: onChanged == null
+                  max: widget.max.toDouble(),
+                  onChanged: (value) {
+                    setState(() {
+                      _value = value.toInt();
+                    });
+                    widget.onChanged(_value);
+                  },
+                  onChangeEnd: widget.onChangeEnd == null
                     ? null
-                    : (value) => onChanged!(value.toInt()),
+                    : (value) => widget.onChangeEnd!(_value),
                 ),
               ),
             ),
