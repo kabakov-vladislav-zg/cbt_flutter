@@ -20,10 +20,10 @@ class CbtNote extends Equatable {
     this.isCreated = false,
     this.isCompleted = false,
     String? uuid,
-    int? timestamp,
+    DateTime? timestamp,
   }) :
     uuid = uuid ?? const Uuid().v1(),
-    timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+    timestamp = timestamp ?? DateTime.now();
 
 
   final String trigger;
@@ -42,11 +42,14 @@ class CbtNote extends Equatable {
 
   final String uuid;
 
-  final int timestamp;
+  @JsonKey(fromJson: _dateFromInt, toJson: _dateToInt)
+  final DateTime timestamp;
 
   static bool _boolFromString(String flag) => flag == 'true';
-
   static String _boolToString(bool flag) => flag ? 'true' : 'false';
+
+  static int _dateToInt(DateTime time) => time.millisecondsSinceEpoch;
+  static DateTime _dateFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time);
 
   static List<Thought> _thoughtListFromString(String string) {
     var list = jsonDecode(string);

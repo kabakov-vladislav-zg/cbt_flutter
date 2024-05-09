@@ -26,8 +26,15 @@ class CbtNotesApi {
   }
 
   Future<List<CbtNote>> getCbtNotes() async {
-    final List<Map<String, Object?>> map = await db.query(
-      'CbtNotes',
+    final List<Map<String, Object?>> map = await db.rawQuery(
+      '''
+        SELECT
+          *
+        FROM
+          CbtNotes
+        ORDER BY
+          timestamp DESC
+      ''',
     );
     // final List<Map<String, Object?>> map = await db.query(
     //   'CbtNotes, json_tree(CbtNotes.emotions)',
