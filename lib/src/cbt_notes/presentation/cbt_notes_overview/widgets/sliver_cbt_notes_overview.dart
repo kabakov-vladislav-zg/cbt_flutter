@@ -13,13 +13,14 @@ class SliverCbtNotesOverview extends StatelessWidget {
   List<({String date, List<CbtNote> cbtNotes})> _getGroupedList(List<CbtNote> list) {
     final List<({String date, List<CbtNote> cbtNotes})> sections = [];
 
-    final groupByDate = groupBy<CbtNote, String>(
+    groupBy(
       list,
       (cbtNote)
         => DateFormat.yMMMMd('ru_RU').format(cbtNote.timestamp),
+    ).forEach(
+      (date, cbtNotes)
+        => sections.add((date: date, cbtNotes: cbtNotes))
     );
-    groupByDate.forEach((date, cbtNotes)
-      => sections.add((date: date, cbtNotes: cbtNotes)));
 
     return sections;
   }
@@ -44,9 +45,8 @@ class SliverCbtNotesOverview extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     sliver: SliverList.builder(
                       itemCount: group.cbtNotes.length,
-                      itemBuilder: (context, index) {
-                        return CardCbtNote(cbtNote: group.cbtNotes[index]);
-                      }
+                      itemBuilder: (context, index)
+                        => CardCbtNote(cbtNote: group.cbtNotes[index])
                     ),
                   )
                 ],

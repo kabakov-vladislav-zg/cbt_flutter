@@ -41,9 +41,9 @@ class CbtNotesOverview extends StatelessWidget {
           );
         },
       ),
-      body: CustomScrollView(
+      body: const CustomScrollView(
         slivers: [
-          const SliverAppBar(
+          SliverAppBar(
             title: Text('КПТ-дневник'),
           ),
           SliverCbtNotesOverview(),
