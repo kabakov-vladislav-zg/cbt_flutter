@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:cbt_flutter/core/utils/json/json_converters.dart';
+import 'package:cbt_flutter/core/utils/json/json_map.dart';
 import 'package:cbt_flutter/core/entities/emotion.dart';
-import 'package:cbt_flutter/core/entities/json_map.dart';
 import 'package:cbt_flutter/core/entities/thought.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -14,52 +15,51 @@ part 'cbt_note.g.dart';
 @JsonSerializable()
 class CbtNote extends Equatable {
   CbtNote({
-    this.trigger = '',
-    this.thoughts = const [],
-    this.emotions = const [],
-    this.isCreated = false,
-    this.isCompleted = false,
+    String? trigger,
+    List<Thought>? thoughts,
+    List<Emotion>? emotions,
+    bool? isCreated,
+    bool? isCompleted,
     String? uuid,
     DateTime? timestamp,
   }) :
+    trigger = trigger ?? '',
+    thoughts = thoughts ?? const [],
+    emotions = emotions ?? const [],
+    isCreated = isCreated ?? false,
+    isCompleted = isCompleted ?? false,
     uuid = uuid ?? const Uuid().v1(),
     timestamp = timestamp ?? DateTime.now();
 
-
+  final String uuid;
+  
   final String trigger;
 
-  @JsonKey(fromJson: _thoughtListFromString, toJson: jsonEncode)
+  @JsonKey(fromJson: _thoughtsFromJson, toJson: jsonEncode)
   final List<Thought> thoughts;
 
-  @JsonKey(fromJson: _emotionListFromString, toJson: jsonEncode)
+  @JsonKey(fromJson: _emotionsFromJson, toJson: jsonEncode)
   final List<Emotion> emotions;
 
-  @JsonKey(fromJson: _boolFromString, toJson: _boolToString)
+  @JsonKey(fromJson: boolFromJson, toJson: boolToJson)
   final bool isCreated;
 
-  @JsonKey(fromJson: _boolFromString, toJson: _boolToString)
+  @JsonKey(fromJson: boolFromJson, toJson: boolToJson)
   final bool isCompleted;
 
-  final String uuid;
-
-  @JsonKey(fromJson: _dateFromInt, toJson: _dateToInt)
+  @JsonKey(fromJson: dateFromJson, toJson: dateToJson)
   final DateTime timestamp;
 
-  static bool _boolFromString(String flag) => flag == 'true';
-  static String _boolToString(bool flag) => flag ? 'true' : 'false';
-
-  static int _dateToInt(DateTime time) => time.millisecondsSinceEpoch;
-  static DateTime _dateFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time);
-
-  static List<Thought> _thoughtListFromString(String string) {
-    var list = jsonDecode(string);
-    return (list as List).map((data) => Thought.fromJson(data)).toList();
-  }
-  static List<Emotion> _emotionListFromString(String string) {
-    var list = jsonDecode(string);
-    return (list as List).map((data) => Emotion.fromJson(data)).toList();
-  }
-
+  static const dbTable = 'CbtNote';
+  static const dbModel = '''
+    uuid TEXT PRIMARY KEY,
+    trigger TEXT,
+    timestamp INTEGER,
+    isCreated TEXT,
+    isCompleted TEXT,
+    thoughts TEXT,
+    emotions TEXT
+  ''';
 
   CbtNote copyWith({
     String? trigger,
@@ -86,3 +86,9 @@ class CbtNote extends Equatable {
   @override
   List<Object> get props => [trigger, thoughts, emotions, isCreated, isCompleted, uuid, timestamp];
 }
+
+List<Thought> _thoughtsFromJson(String json)
+  => listFromJson(json, Thought.fromJson);
+  
+List<Emotion> _emotionsFromJson(String json)
+  => listFromJson(json, Emotion.fromJson);

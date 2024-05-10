@@ -1,4 +1,4 @@
-import 'package:cbt_flutter/core/entities/json_map.dart';
+import 'package:cbt_flutter/core/utils/json/json_map.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';

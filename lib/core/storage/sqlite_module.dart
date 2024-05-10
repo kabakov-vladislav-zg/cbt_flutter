@@ -1,3 +1,4 @@
+import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,14 +15,8 @@ Future<Database> getDb() async {
     onCreate: (db, version) {
       return db.execute('''
           CREATE TABLE
-          CbtNotes(
-            uuid TEXT PRIMARY KEY,
-            trigger TEXT,
-            timestamp INTEGER,
-            isCreated TEXT,
-            isCompleted TEXT,
-            thoughts TEXT,
-            emotions TEXT
+          ${CbtNote.dbTable} (
+            ${CbtNote.dbModel}
           )
         ''');
     },
