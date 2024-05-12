@@ -50,15 +50,24 @@ class CbtNote extends Equatable {
   @JsonKey(fromJson: dateFromJson, toJson: dateToJson)
   final DateTime timestamp;
 
-  static const dbTable = 'CbtNote';
-  static const dbModel = '''
-    uuid TEXT PRIMARY KEY,
-    trigger TEXT,
-    timestamp INTEGER,
-    isCreated TEXT,
-    isCompleted TEXT,
-    thoughts TEXT,
-    emotions TEXT
+  static const table = 'CbtNotes';
+  static const columns = (
+    uuid: 'uuid',
+    trigger: 'trigger',
+    timestamp: 'timestamp',
+    isCreated: 'isCreated',
+    isCompleted: 'isCompleted',
+    thoughts: 'thoughts',
+    emotions: 'emotions',
+  );
+  static String get model => '''
+    ${columns.uuid} TEXT PRIMARY KEY,
+    ${columns.trigger} TEXT,
+    ${columns.timestamp} INTEGER,
+    ${columns.isCreated} TEXT,
+    ${columns.isCompleted} TEXT,
+    ${columns.thoughts} TEXT,
+    ${columns.emotions} TEXT
   ''';
 
   CbtNote copyWith({

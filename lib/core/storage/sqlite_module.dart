@@ -15,8 +15,8 @@ Future<Database> getDb() async {
     onCreate: (db, version) {
       return db.execute('''
           CREATE TABLE
-          ${CbtNote.dbTable} (
-            ${CbtNote.dbModel}
+          ${CbtNote.table} (
+            ${CbtNote.model}
           )
         ''');
     },
