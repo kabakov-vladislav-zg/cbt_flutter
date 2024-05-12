@@ -66,7 +66,7 @@ String _bildQuery([CbtNotesFilter? filter]) {
 
   if (isCompleted != null) {
     final flag = boolToJson(isCompleted);
-    where.add('${columns.isCompleted} = $flag}');
+    where.add('${columns.isCompleted} = $flag');
   }
 
   if (dateFrom != null) {

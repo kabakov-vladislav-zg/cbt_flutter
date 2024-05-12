@@ -16,8 +16,9 @@ class CbtNotesOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt.get<CbtNotesOverviewBloc>()
-      ..add(const CbtNotesOverviewSubscribe()),
+      create: (context)
+        => getIt.get<CbtNotesOverviewBloc>()
+          ..add(const CbtNotesOverviewSubscribe()),
       child: const CbtNotesOverview(),
     );
   }
