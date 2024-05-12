@@ -1,5 +1,6 @@
 import 'package:cbt_flutter/core/datasources/cbt_notes_api.dart';
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
+import 'package:cbt_flutter/core/entities/cbt_notes_filter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -13,7 +14,10 @@ class CbtNotesRepo {
 
   late final BehaviorSubject<List<CbtNote>> _streamController;
 
-  Future<Stream<List<CbtNote>>> getCbtNotesStream() async {
+  CbtNotesFilter? _filter;
+
+  Future<Stream<List<CbtNote>>> getCbtNotesStream(CbtNotesFilter? filter) async {
+    _filter = filter;
     final list = await _getCbtNotes();
     _streamController = BehaviorSubject<List<CbtNote>>.seeded(list);
     return _streamController.asBroadcastStream();
@@ -23,17 +27,24 @@ class CbtNotesRepo {
     final list = await _getCbtNotes();
     _streamController.add(list);
   }
+
+  void setCbtNotesFilter(CbtNotesFilter filter) {
+    _filter = filter;
+  }
   
   Future<void> insertCbtNote(CbtNote cbtNote) async {
     await _cbtNotesApi.insertCbtNote(cbtNote);
   }
+
   Future<void> updateCbtNote(CbtNote cbtNote) async {
     await _cbtNotesApi.updateCbtNote(cbtNote);
   }
+
   Future<void> removeCbtNote(String uuid) async {
     await _cbtNotesApi.deleteCbtNote(uuid);
   }
+
   Future<List<CbtNote>> _getCbtNotes() async {
-    return _cbtNotesApi.getCbtNotes();
+    return _cbtNotesApi.getCbtNotes(_filter);
   }
 }

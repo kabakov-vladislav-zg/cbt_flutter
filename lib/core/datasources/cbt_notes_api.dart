@@ -1,6 +1,6 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
+import 'package:cbt_flutter/core/entities/cbt_notes_filter.dart';
 import 'package:cbt_flutter/core/utils/json/json_converters.dart';
-import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
@@ -29,23 +29,24 @@ class CbtNotesApi {
     );
   }
 
-  Future<List<CbtNote>> getCbtNotes() async {
-    final List<Map<String, Object?>> map = await db.rawQuery(_getQuery());
-    return [
-      for (final note in map) CbtNote.fromJson(note),
-    ];
-  }
-
   Future<void> deleteCbtNote(String uuid) async {
     await db.delete(
       table,
       where: 'uuid = $uuid',
     );
   }
+
+  Future<List<CbtNote>> getCbtNotes([CbtNotesFilter? filter]) async {
+    final map = await db.rawQuery(_bildQuery(filter));
+    return [
+      for (final note in map)
+        CbtNote.fromJson(note),
+    ];
+  }
 }
 
-String _getQuery([CbtNoteFilter? filter]) {
-  filter = filter ?? const CbtNoteFilter();
+String _bildQuery([CbtNotesFilter? filter]) {
+  filter = filter ?? const CbtNotesFilter();
   final uuid = filter.uuid;
   final isCompleted = filter.isCompleted;
   final dateFrom = filter.dateFrom;
@@ -97,25 +98,4 @@ String _getQuery([CbtNoteFilter? filter]) {
     columns.timestamp,
     'DESC',
   ].join(' ');
-}
-
-class CbtNoteFilter extends Equatable {
-  const CbtNoteFilter({
-    this.uuid,
-    this.isCompleted,
-    this.dateFrom,
-    this.dateTo,
-    this.emotion,
-    this.corruption,
-  });
-
-  final String? uuid;
-  final bool? isCompleted;
-  final DateTime? dateFrom;
-  final DateTime? dateTo;
-  final String? emotion;
-  final String? corruption;
-
-  @override
-  get props => [uuid, isCompleted, dateFrom, dateTo, emotion, corruption];
 }
