@@ -37,7 +37,6 @@ class SliverCbtNotesOverview extends StatelessWidget {
               SliverMainAxisGroup(
                 slivers: [
                   SliverAppBar(
-                    pinned: true,
                     automaticallyImplyLeading: false,
                     title: Text(group.date),
                   ),
