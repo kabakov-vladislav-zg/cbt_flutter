@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../bloc/cbt_notes_overview_bloc.dart';
+import '../bloc/cbt_notes_overview_cubit.dart';
 import './card_cbt_note.dart';
 
 class SliverCbtNotesOverview extends StatelessWidget {
@@ -27,7 +27,7 @@ class SliverCbtNotesOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<CbtNotesOverviewBloc, CbtNotesOverviewState, List<CbtNote>>(
+    return BlocSelector<CbtNotesOverviewCubit, CbtNotesOverviewState, List<CbtNote>>(
       selector: (state) => (state.list),
       builder: (context, list) {
         final groupedList = _getGroupedList(list);

@@ -1,4 +1,4 @@
-part of 'cbt_notes_overview_bloc.dart';
+part of 'cbt_notes_overview_cubit.dart';
 
 @immutable
 class CbtNotesOverviewState extends Equatable {

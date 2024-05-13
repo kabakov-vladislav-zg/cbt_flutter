@@ -11,12 +11,11 @@ import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'cbt_notes_overview_state.dart';
-part 'cbt_notes_overview_event.dart';
 
 @injectable
-class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewState> {
+class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
   @factoryMethod
-  CbtNotesOverviewBloc({
+  CbtNotesOverviewCubit({
     required UpdateCbtNotesStream updateCbtNotesStream,
     required GetCbtNotesStream getCbtNotesStream,
     required SetCbtNotesFilter setCbtNotesFilter,
@@ -28,12 +27,7 @@ class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewS
     _setCbtNotesFilter = setCbtNotesFilter,
     _insertCbtNote = insertCbtNote,
     _removeCbtNote = removeCbtNote,
-    super(const CbtNotesOverviewState()) {
-      on<CbtNotesOverviewSubscribe>(_onSubscriptionRequested);
-      on<CbtNotesOverviewInsert>(_addNote);
-      on<CbtNotesOverviewRemove>(_removeNote);
-      on<CbtNotesOverviewFilter>(_setFilter);
-    }
+    super(const CbtNotesOverviewState());
   
   final UpdateCbtNotesStream _updateCbtNotesStream;
   final GetCbtNotesStream _getCbtNotesStream;
@@ -41,45 +35,42 @@ class CbtNotesOverviewBloc extends Bloc<CbtNotesOverviewEvent, CbtNotesOverviewS
   final InsertCbtNote _insertCbtNote;
   final RemoveCbtNote _removeCbtNote;
 
-  Future<void> _onSubscriptionRequested(
-    CbtNotesOverviewSubscribe event,
-    Emitter<CbtNotesOverviewState> emit,
-  ) async {
-    await emit.forEach<List<CbtNote>>(
-      await _getCbtNotesStream(state.filter),
-      onData: (list) => state.copyWith(list: list),
-    );
+  Future<void> subscriptionRequested() async {
+    final stream = await _getCbtNotesStream(state.filter);
+    stream.listen((list) {
+      emit(state.copyWith(list: list));
+    });
   }
 
-  Future<void> _addNote(
-    CbtNotesOverviewInsert event,
-    Emitter<CbtNotesOverviewState> emit,
-  ) async {
+  Future<CbtNote> addNote() async {
+    final cbtNote = CbtNote();
     final list = [...state.list];
-    list.add(event.cbtNote);
-    await _insertCbtNote(event.cbtNote);
+    list.add(cbtNote);
+    await _insertCbtNote(cbtNote);
+    _updateCbtNotesStream();
+    return cbtNote;
+  }
+
+  Future<void> removeNote(String uuid) async {
+    await _removeCbtNote(uuid);
     await _updateCbtNotesStream();
   }
 
-  Future<void> _removeNote(
-    CbtNotesOverviewRemove event,
-    Emitter<CbtNotesOverviewState> emit,
-  ) async {
-    await _removeCbtNote(event.uuid);
-    await _updateCbtNotesStream();
-  }
-
-  Future<void> _setFilter(
-    CbtNotesOverviewFilter event,
-    Emitter<CbtNotesOverviewState> emit,
-  ) async {
+  Future<void> setFilter({
+    ValueGetter<String>? uuid,
+    ValueGetter<bool>? isCompleted,
+    ValueGetter<DateTime>? dateFrom,
+    ValueGetter<DateTime>? dateTo,
+    ValueGetter<String>? emotion,
+    ValueGetter<String>? corruption,
+  }) async {
     final filter = state.filter.copyWithGetter(
-      uuid: event.uuid,
-      isCompleted: event.isCompleted,
-      dateFrom: event.dateFrom,
-      dateTo: event.dateTo,
-      emotion: event.emotion,
-      corruption: event.corruption,
+      uuid: uuid,
+      isCompleted: isCompleted,
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+      emotion: emotion,
+      corruption: corruption,
     );
     
     if (filter == state.filter) return;
