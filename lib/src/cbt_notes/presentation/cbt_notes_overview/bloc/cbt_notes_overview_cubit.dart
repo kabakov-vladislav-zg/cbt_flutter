@@ -56,27 +56,49 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
     await _updateCbtNotesStream();
   }
 
-  Future<void> setFilter({
-    ValueGetter<String>? uuid,
-    ValueGetter<bool>? isCompleted,
+  Future<void> setDate({
     ValueGetter<DateTime>? dateFrom,
     ValueGetter<DateTime>? dateTo,
+  }) async {
+    final filter = state
+      .calendarFilter
+      .copyWithGetter(
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+      );
+    
+    if (filter == state.calendarFilter) return;
+    emit(state.copyWith(calendarFilter: filter));
+    if (state.filterType != FilterType.calendar) return;
+
+    _setCbtNotesFilter(filter);
+    await _updateCbtNotesStream();
+  }
+
+  Future<void> setFilter({
+    ValueGetter<bool>? isCompleted,
     ValueGetter<String>? emotion,
     ValueGetter<String>? corruption,
   }) async {
-    final filter = state.filter.copyWithGetter(
-      uuid: uuid,
-      isCompleted: isCompleted,
-      dateFrom: dateFrom,
-      dateTo: dateTo,
-      emotion: emotion,
-      corruption: corruption,
-    );
+    final filter = state
+      .listFilter
+      .copyWithGetter(
+        isCompleted: isCompleted,
+        emotion: emotion,
+        corruption: corruption,
+      );
     
-    if (filter == state.filter) return;
+    if (filter == state.listFilter) return;
+    emit(state.copyWith(listFilter: filter));
+    if (state.filterType != FilterType.list) return;
 
-    emit(state.copyWith(filter: filter));
     _setCbtNotesFilter(filter);
+    await _updateCbtNotesStream();
+  }
+
+  Future<void> setFilterType(FilterType filterType) async {
+    emit(state.copyWith(filterType: filterType));
+    _setCbtNotesFilter(state.filter);
     await _updateCbtNotesStream();
   }
 }
