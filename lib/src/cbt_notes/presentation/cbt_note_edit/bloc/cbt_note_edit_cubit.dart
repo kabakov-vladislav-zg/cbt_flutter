@@ -126,7 +126,6 @@ class CbtNoteEditCubit extends Cubit<CbtNoteEditState> {
     bool? isCreated,
     bool? isCompleted,
   }) async {
-    print('_emitCbtNote');
     final cbtNote = state.cbtNote.copyWith(
       trigger: trigger,
       thoughts: thoughts,

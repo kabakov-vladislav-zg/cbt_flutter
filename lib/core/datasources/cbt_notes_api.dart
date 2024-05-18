@@ -25,14 +25,14 @@ class CbtNotesApi {
     await db.update(
       table,
       cbtNote.toJson(),
-      where: 'uuid = ${cbtNote.uuid}',
+      where: 'uuid = "${cbtNote.uuid}"',
     );
   }
 
   Future<void> deleteCbtNote(String uuid) async {
     await db.delete(
       table,
-      where: 'uuid = $uuid',
+      where: 'uuid = "$uuid"',
     );
   }
 
@@ -61,7 +61,7 @@ String _bildQuery([CbtNotesFilter? filter]) {
   final where = [];
 
   if (uuid != null) {
-    where.add('${columns.uuid} = $uuid');
+    where.add('${columns.uuid} = "$uuid"');
   }
 
   if (isCompleted != null) {
