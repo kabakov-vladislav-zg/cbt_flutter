@@ -77,8 +77,8 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
 
   Future<void> setFilter({
     ValueGetter<bool?>? isCompleted,
-    ValueGetter<String>? emotion,
-    ValueGetter<String>? corruption,
+    ValueGetter<String?>? emotion,
+    ValueGetter<String?>? corruption,
   }) async {
     final filter = state
       .listFilter

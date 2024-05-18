@@ -1,16 +1,15 @@
 import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:cbt_flutter/core/utils/emotions.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-import '../widgets/set_emotion_intensity_dialog.dart';
 
 class SetEmotionDialog extends StatefulWidget {
   const SetEmotionDialog({
     super.key,
     required this.exclude,
+    required this.onSelect,
   });
   final List<String> exclude;
+  final ValueChanged<String> onSelect;
 
   @override
   State<SetEmotionDialog> createState() => _SetEmotionDialogState();
@@ -19,17 +18,6 @@ class SetEmotionDialog extends StatefulWidget {
 class _SetEmotionDialogState extends State<SetEmotionDialog> {
   final _emotions = getIt.get<Emotions>();
   late final List<GlobalKey> _keys = _emotions.sections.map((section) => GlobalKey()).toList();
-
-  Future<void> _dialogBuilder(String name) async {
-    final router = GoRouter.of(context);
-    final intensity = await showDialog<int>(
-      context: context,
-      builder: (context)
-        => SetEmotionIntensityDialog(name: name),
-    );
-    if (intensity == null) return;
-    router.pop((name: name, intensity: intensity));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +82,7 @@ class _SetEmotionDialogState extends State<SetEmotionDialog> {
                     return isExcluded
                       ? btn
                       : GestureDetector(
-                          onTap: () => _dialogBuilder(name),
+                          onTap: () => widget.onSelect(name),
                           child: btn,
                         );
                   },

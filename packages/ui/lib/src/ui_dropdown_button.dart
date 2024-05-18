@@ -6,6 +6,7 @@ class UIDropdownButton<T> extends StatefulWidget {
     this.value,
     this.onChanged,
     this.onTap,
+    this.onClear,
     this.hintText,
     this.clearable = false,
     this.items = const [],
@@ -14,6 +15,7 @@ class UIDropdownButton<T> extends StatefulWidget {
   final T? value;
   final ValueChanged<T?>? onChanged;
   final VoidCallback? onTap;
+  final VoidCallback? onClear;
   final bool clearable;
   final String? hintText;
   final List<(T?, String)> items;
@@ -75,7 +77,10 @@ class _UIDropdownButtonState<T> extends State<UIDropdownButton<T>> {
         if (widget.clearable && widget.value != null)
           IconButton(
             icon: const Icon(Icons.clear),
-            onPressed: () => widget.onChanged?.call(null),
+            onPressed: () {
+              widget.onChanged?.call(null);
+              widget.onClear?.call();
+            },
           ),
       ],
     );

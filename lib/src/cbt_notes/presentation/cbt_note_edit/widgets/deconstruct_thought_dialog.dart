@@ -1,6 +1,6 @@
 import 'package:cbt_flutter/core/common/buttons/btn.dart';
 import 'package:cbt_flutter/src/cbt_notes/presentation/cbt_note_edit/utils/debounce.dart';
-import 'package:cbt_flutter/src/cbt_notes/presentation/cbt_note_edit/widgets/set_corruption_dialog.dart';
+import 'package:cbt_flutter/core/common/set_corruption_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
