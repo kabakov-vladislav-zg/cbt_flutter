@@ -19,12 +19,12 @@ class CbtNotesFilter extends Equatable {
   final String? corruption;
 
   CbtNotesFilter copyWithGetter({
-    ValueGetter<String>? uuid,
-    ValueGetter<bool>? isCompleted,
-    ValueGetter<DateTime>? dateFrom,
-    ValueGetter<DateTime>? dateTo,
-    ValueGetter<String>? emotion,
-    ValueGetter<String>? corruption,
+    ValueGetter<String?>? uuid,
+    ValueGetter<bool?>? isCompleted,
+    ValueGetter<DateTime?>? dateFrom,
+    ValueGetter<DateTime?>? dateTo,
+    ValueGetter<String?>? emotion,
+    ValueGetter<String?>? corruption,
   }) {
     return CbtNotesFilter(
       uuid: uuid != null ? uuid() : this.uuid,
