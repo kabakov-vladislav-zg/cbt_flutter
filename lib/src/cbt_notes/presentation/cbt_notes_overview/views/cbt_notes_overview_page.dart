@@ -1,10 +1,10 @@
-import 'package:cbt_flutter/core/common/layouts/exercise_overview_layout.dart';
 import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../bloc/cbt_notes_overview_cubit.dart';
+import '../widgets/cbt_notes_filter_calendar.dart';
 import '../widgets/cbt_notes_filter_list.dart';
 import '../widgets/sliver_cbt_notes_overview.dart';
 import '../../cbt_note_edit/views/cbt_note_edit_page.dart';
@@ -54,25 +54,27 @@ class _CbtNotesOverviewState extends State<CbtNotesOverview> {
       builder: (context, filterType) {
         FilterType nextFilterType;
         IconData icon;
+        Widget filter;
         switch (filterType) {
           case FilterType.calendar:
             nextFilterType = FilterType.list;
             icon = Icons.list;
+            filter = const CbtNotesFilterCalendar();
             break;
           default:
             nextFilterType = FilterType.calendar;
+            filter = const CbtNotesFilterList();
             icon = Icons.calendar_month;
         }
         return Scaffold(
-          body: ExerciseOverviewLayout(
-            onboarding: Container(),
-            slivers: const [
-              SliverAppBar(
-                title: Text('КПТ-дневник'),
-              ),
-              CbtNotesFilterList(),
-              SliverCbtNotesOverview(),
-            ],
+          body: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                const SliverAppBar(title: Text('КПТ-дневник')),
+                filter,
+                const SliverCbtNotesOverview(),
+              ],
+            ),
           ),
           floatingActionButtonLocation:
             FloatingActionButtonLocation.centerFloat,
