@@ -49,7 +49,6 @@ class CbtNotesRepo {
   }
 
   Future<List<CbtNote>> _getCbtNotes() async {
-    print(_filter);
     return _cbtNotesApi.getCbtNotes(_filter);
   }
 }
