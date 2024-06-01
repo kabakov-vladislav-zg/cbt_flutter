@@ -4,14 +4,14 @@ import 'package:ui/ui.dart';
 
 import '../bloc/cbt_notes_overview_cubit.dart';
 
-class CbtNotesFilterCalendar extends StatefulWidget {
-  const CbtNotesFilterCalendar({super.key});
+class FilterBarCbtNotesCalendar extends StatefulWidget {
+  const FilterBarCbtNotesCalendar({super.key});
 
   @override
-  State<CbtNotesFilterCalendar> createState() => _CbtNotesFilterCalendarState();
+  State<FilterBarCbtNotesCalendar> createState() => _FilterBarCbtNotesCalendarState();
 }
 
-class _CbtNotesFilterCalendarState extends State<CbtNotesFilterCalendar> {
+class _FilterBarCbtNotesCalendarState extends State<FilterBarCbtNotesCalendar> {
   void _onDaySelected(DateTime day) {
     context
       .read<CbtNotesOverviewCubit>()

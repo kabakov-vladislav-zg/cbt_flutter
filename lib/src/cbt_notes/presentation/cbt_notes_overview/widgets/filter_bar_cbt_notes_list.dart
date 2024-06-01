@@ -8,8 +8,8 @@ import 'package:ui/ui.dart';
 
 import '../bloc/cbt_notes_overview_cubit.dart';
 
-class CbtNotesFilterList extends StatelessWidget {
-  const CbtNotesFilterList({super.key});
+class FilterBarCbtNotesList extends StatelessWidget {
+  const FilterBarCbtNotesList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +17,14 @@ class CbtNotesFilterList extends StatelessWidget {
       automaticallyImplyLeading: false,
       floating: true,
       flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: ListView(scrollDirection: Axis.horizontal, children: [
-            Center(
-              child: BlocSelector<CbtNotesOverviewCubit, CbtNotesOverviewState, CbtNotesFilter>(
-                selector: (state) => state.listFilter,
-                builder: (context, filter) {
-                  return Wrap(
+        background: ListView(scrollDirection: Axis.horizontal, children: [
+          Center(
+            child: BlocSelector<CbtNotesOverviewCubit, CbtNotesOverviewState, CbtNotesFilter>(
+              selector: (state) => state.listFilter,
+              builder: (context, filter) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: 16,
                     children: [
@@ -73,12 +73,12 @@ class CbtNotesFilterList extends StatelessWidget {
                         }
                       ),
                     ],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ]),
-        ),
+          ),
+        ]),
       ),
     );
   }

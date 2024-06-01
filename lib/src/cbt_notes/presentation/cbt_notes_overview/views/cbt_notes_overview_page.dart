@@ -1,13 +1,11 @@
 import 'package:cbt_flutter/core/di/sl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../bloc/cbt_notes_overview_cubit.dart';
-import '../widgets/cbt_notes_filter_calendar.dart';
-import '../widgets/cbt_notes_filter_list.dart';
-import '../widgets/sliver_cbt_notes_overview.dart';
-import '../../cbt_note_edit/views/cbt_note_edit_page.dart';
+import '../widgets/cbt_notes_actions.dart';
+import '../widgets/filter_bar_cbt_notes.dart';
+import '../widgets/cbt_notes_overview.dart';
 
 class CbtNotesOverviewPage extends StatelessWidget {
   const CbtNotesOverviewPage({super.key});
@@ -18,82 +16,36 @@ class CbtNotesOverviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          getIt.get<CbtNotesOverviewCubit>()..subscriptionRequested(),
-      child: const CbtNotesOverview(),
+        getIt.get<CbtNotesOverviewCubit>()
+        ..subscriptionRequested(),
+      child: const _CbtNotesOverviewPage(),
     );
   }
 }
 
-class CbtNotesOverview extends StatefulWidget {
-  const CbtNotesOverview({super.key});
-
-  @override
-  State<CbtNotesOverview> createState() => _CbtNotesOverviewState();
-}
-
-class _CbtNotesOverviewState extends State<CbtNotesOverview> {
-  void _addCbtNote() async {
-    final router = GoRouter.of(context);
-    final cbtNote = await context.read<CbtNotesOverviewCubit>().addNote();
-    router.goNamed(
-      CbtNoteEditPage.routeName,
-      extra: cbtNote,
-    );
-  }
-
-  void _toggleFilterType(FilterType filterType) async {
-    await context
-      .read<CbtNotesOverviewCubit>()
-      .setFilterType(filterType);
-  }
+class _CbtNotesOverviewPage extends StatelessWidget {
+  const _CbtNotesOverviewPage();
 
   @override
   Widget build(BuildContext context) {
     return BlocSelector<CbtNotesOverviewCubit, CbtNotesOverviewState, FilterType>(
       selector: (state) => state.filterType,
       builder: (context, filterType) {
-        FilterType nextFilterType;
-        IconData icon;
-        Widget filter;
-        switch (filterType) {
-          case FilterType.calendar:
-            nextFilterType = FilterType.list;
-            icon = Icons.list;
-            filter = const CbtNotesFilterCalendar();
-            break;
-          default:
-            nextFilterType = FilterType.calendar;
-            filter = const CbtNotesFilterList();
-            icon = Icons.calendar_month;
-        }
-        return Scaffold(
+        return const Scaffold(
           body: SafeArea(
             child: CustomScrollView(
               slivers: [
-                const SliverAppBar(title: Text('КПТ-дневник')),
-                filter,
-                const SliverCbtNotesOverview(),
+                SliverAppBar(title: Text('КПТ-дневник')),
+                FilterBarCbtNotes(),
+                CbtNotesOverview(),
               ],
             ),
           ),
           floatingActionButtonLocation:
             FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton.filled(
-                  icon: Icon(icon),
-                  onPressed: ()
-                    => _toggleFilterType(nextFilterType),
-                ),
-                IconButton.filled(
-                  icon: const Icon(Icons.add),
-                  onPressed: _addCbtNote,
-                ),
-              ],
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: CbtNotesActions(),
           ),
         );
       },

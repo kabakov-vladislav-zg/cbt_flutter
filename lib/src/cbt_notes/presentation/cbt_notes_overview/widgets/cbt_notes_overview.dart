@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 import '../bloc/cbt_notes_overview_cubit.dart';
 import './card_cbt_note.dart';
 
-class SliverCbtNotesOverview extends StatelessWidget {
-  const SliverCbtNotesOverview({super.key});
+class CbtNotesOverview extends StatelessWidget {
+  const CbtNotesOverview({super.key});
 
   List<({String date, List<CbtNote> cbtNotes})> _getGroupedList(List<CbtNote> list) {
     final List<({String date, List<CbtNote> cbtNotes})> sections = [];
