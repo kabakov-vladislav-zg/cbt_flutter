@@ -6,9 +6,9 @@ enum FilterType {list, calendar}
 class CbtNotesOverviewState extends Equatable {
   const CbtNotesOverviewState({
     this.list = const [],
-    this.listFilter = const CbtNotesFilter(isCompleted: false),
-    this.calendarFilter = const CbtNotesFilter(),
-    this.filterType = FilterType.list,
+    required this.listFilter,
+    required this.calendarFilter,
+    required this.filterType,
   });
 
   final List<CbtNote> list;

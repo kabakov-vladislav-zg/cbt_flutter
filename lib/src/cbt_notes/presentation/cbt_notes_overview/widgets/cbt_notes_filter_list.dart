@@ -39,7 +39,7 @@ class CbtNotesFilterList extends StatelessWidget {
                         onChanged: (bool? value) {
                           context
                             .read<CbtNotesOverviewCubit>()
-                            .setFilter(isCompleted: () => value);
+                            .setListFilter(isCompleted: () => value);
                         },
                       ),
                       UIDropdownButton<String>(
@@ -54,7 +54,7 @@ class CbtNotesFilterList extends StatelessWidget {
                         onChanged: (value) {
                           context
                             .read<CbtNotesOverviewCubit>()
-                            .setFilter(emotion: () => value);
+                            .setListFilter(emotion: () => value);
                         }
                       ),
                       UIDropdownButton<String>(
@@ -69,7 +69,7 @@ class CbtNotesFilterList extends StatelessWidget {
                         onChanged: (value) {
                           context
                             .read<CbtNotesOverviewCubit>()
-                            .setFilter(corruption: () => value);
+                            .setListFilter(corruption: () => value);
                         }
                       ),
                     ],
@@ -93,7 +93,7 @@ Future<void> _emotionDialogBuilder(BuildContext context) async {
       => SetEmotionDialog(
         exclude: [if (emotion != null) emotion],
         onSelect: (name) {
-          cubit.setFilter(emotion: () => name);
+          cubit.setListFilter(emotion: () => name);
           innerContext.pop();
         },
       ),
@@ -107,7 +107,7 @@ Future<void> _corruptionDialogBuilder(BuildContext context) async {
     builder: (innerContext)
       => SetCorruptionDialog(
         onSelect: (name) {
-          cubit.setFilter(corruption: () => name);
+          cubit.setListFilter(corruption: () => name);
           innerContext.pop();
         },
       ),

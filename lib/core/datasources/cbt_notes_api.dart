@@ -36,16 +36,21 @@ class CbtNotesApi {
     );
   }
 
-  Future<List<CbtNote>> getCbtNotes([CbtNotesFilter? filter]) async {
+  Future<List<CbtNote>> getCbtNotes(CbtNotesFilter? filter) async {
     final map = await db.rawQuery(_bildQuery(filter));
     return [
       for (final note in map)
         CbtNote.fromJson(note),
     ];
   }
+
+  Future<int> countCbtNotes(CbtNotesFilter? filter) async {
+    final [map] = await db.rawQuery(_bildQuery(filter, count: true));
+    return map['count'] as int;
+  }
 }
 
-String _bildQuery([CbtNotesFilter? filter]) {
+String _bildQuery(CbtNotesFilter? filter, { bool count = false }) {
   filter = filter ?? const CbtNotesFilter();
   final uuid = filter.uuid;
   final isCompleted = filter.isCompleted;
@@ -57,6 +62,9 @@ String _bildQuery([CbtNotesFilter? filter]) {
   const table = CbtNote.table;
   const columns = CbtNote.columns;
 
+  final operator = count
+    ? 'SELECT count(*) AS "count"'
+    : 'SELECT *';
   final from =[table];
   final where = [];
 
@@ -89,7 +97,7 @@ String _bildQuery([CbtNotesFilter? filter]) {
   }
 
   return [
-    'SELECT *',
+    operator,
     'FROM',
     from.join(', '),
     if (where.isNotEmpty)

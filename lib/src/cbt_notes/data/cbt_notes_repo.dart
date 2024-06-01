@@ -43,8 +43,13 @@ class CbtNotesRepo {
   Future<void> removeCbtNote(String uuid) async {
     await _cbtNotesApi.deleteCbtNote(uuid);
   }
+  
+  Future<int> countCbtNotes(filter) async {
+    return _cbtNotesApi.countCbtNotes(filter);
+  }
 
   Future<List<CbtNote>> _getCbtNotes() async {
+    print(_filter);
     return _cbtNotesApi.getCbtNotes(_filter);
   }
 }

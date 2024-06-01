@@ -1,5 +1,6 @@
 import 'package:cbt_flutter/core/entities/cbt_note.dart';
 import 'package:cbt_flutter/core/entities/cbt_notes_filter.dart';
+import 'package:cbt_flutter/src/cbt_notes/domain/count_cbt_notes.dart';
 import 'package:cbt_flutter/src/cbt_notes/domain/get_cbt_notes_stream.dart';
 import 'package:cbt_flutter/src/cbt_notes/domain/remowe_cbt_note.dart';
 import 'package:cbt_flutter/src/cbt_notes/domain/insert_cbt_note.dart';
@@ -21,19 +22,29 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
     required SetCbtNotesFilter setCbtNotesFilter,
     required InsertCbtNote insertCbtNote,
     required RemoveCbtNote removeCbtNote,
+    required CountCbtNotes countCbtNotes,
   }) : 
     _updateCbtNotesStream = updateCbtNotesStream,
     _getCbtNotesStream = getCbtNotesStream,
     _setCbtNotesFilter = setCbtNotesFilter,
     _insertCbtNote = insertCbtNote,
     _removeCbtNote = removeCbtNote,
-    super(const CbtNotesOverviewState());
+    _countCbtNotes = countCbtNotes,
+    super(CbtNotesOverviewState(
+      listFilter: const CbtNotesFilter(isCompleted: false),
+      calendarFilter: CbtNotesFilter(
+        dateFrom: DateTime.now(),
+        dateTo: DateTime.now().add(const Duration(days: 1)),
+      ),
+      filterType: FilterType.list
+    ));
   
   final UpdateCbtNotesStream _updateCbtNotesStream;
   final GetCbtNotesStream _getCbtNotesStream;
   final SetCbtNotesFilter _setCbtNotesFilter;
   final InsertCbtNote _insertCbtNote;
   final RemoveCbtNote _removeCbtNote;
+  final CountCbtNotes _countCbtNotes;
 
   Future<void> subscriptionRequested() async {
     final stream = await _getCbtNotesStream(state.filter);
@@ -42,10 +53,8 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
     });
   }
 
-  Future<CbtNote> addNote() async {
-    final cbtNote = CbtNote();
-    final list = [...state.list];
-    list.add(cbtNote);
+  Future<CbtNote> addNote({ DateTime? date }) async {
+    final cbtNote = CbtNote(timestamp: date);
     await _insertCbtNote(cbtNote);
     _updateCbtNotesStream();
     return cbtNote;
@@ -56,15 +65,12 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
     await _updateCbtNotesStream();
   }
 
-  Future<void> setDate({
-    ValueGetter<DateTime>? dateFrom,
-    ValueGetter<DateTime>? dateTo,
-  }) async {
+  Future<void> setCalendarFilter(DateTime day) async {
     final filter = state
       .calendarFilter
       .copyWithGetter(
-        dateFrom: dateFrom,
-        dateTo: dateTo,
+        dateFrom: () => day,
+        dateTo: () => day.add(const Duration(days: 1)),
       );
     
     if (filter == state.calendarFilter) return;
@@ -75,7 +81,14 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
     await _updateCbtNotesStream();
   }
 
-  Future<void> setFilter({
+  Future<int> countCalendarFilter(DateTime day) async {
+    return _countCbtNotes(CbtNotesFilter(
+      dateFrom: day,
+      dateTo: day.add(const Duration(days: 1)),
+    ));
+  }
+
+  Future<void> setListFilter({
     ValueGetter<bool?>? isCompleted,
     ValueGetter<String?>? emotion,
     ValueGetter<String?>? corruption,
@@ -94,6 +107,22 @@ class CbtNotesOverviewCubit extends Cubit<CbtNotesOverviewState> {
 
     _setCbtNotesFilter(filter);
     await _updateCbtNotesStream();
+  }
+
+  Future<int> countListFilter({
+    ValueGetter<bool?>? isCompleted,
+    ValueGetter<String?>? emotion,
+    ValueGetter<String?>? corruption,
+  }) async {
+    final filter = state
+      .listFilter
+      .copyWithGetter(
+        isCompleted: isCompleted,
+        emotion: emotion,
+        corruption: corruption,
+      );
+      
+    return _countCbtNotes(filter);
   }
 
   Future<void> setFilterType(FilterType filterType) async {

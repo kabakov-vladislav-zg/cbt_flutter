@@ -7,9 +7,11 @@ class SetEmotionDialog extends StatefulWidget {
     super.key,
     required this.exclude,
     required this.onSelect,
+    this.emotionCount,
   });
   final List<String> exclude;
   final ValueChanged<String> onSelect;
+  final Future<int> Function(String)? emotionCount;
 
   @override
   State<SetEmotionDialog> createState() => _SetEmotionDialogState();

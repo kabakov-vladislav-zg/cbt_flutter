@@ -1,23 +1,42 @@
 part of 'ui_calendar.dart';
 
+enum DayType {
+  today,
+  normal,
+  outside,
+  selected,
+}
+
 class UICalendarDay extends StatelessWidget {
   const UICalendarDay({
     super.key,
     required this.day,
-    required this.selectedDay,
-    required this.currentDay,
+    required this.dayType,
     required this.getEventCount,
   });
 
   final DateTime day;
-  final DateTime selectedDay;
-  final DateTime currentDay;
+  final DayType dayType;
   final Future<int> Function(DateTime) getEventCount;
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = isSameDay(selectedDay, day);
-    final isCurrent = isSameDay(currentDay, day);
+    Color color = Colors.black;
+    Color background = Colors.transparent;
+    FontWeight fontWeight = FontWeight.normal;
+    switch (dayType) {
+      case DayType.today:
+        fontWeight = FontWeight.bold;
+        break;
+      case DayType.outside:
+        color = Colors.grey;
+        break;
+      case DayType.selected:
+        color = Colors.white;
+        background = Colors.blue;
+        break;
+      default:
+    }
     return Stack(
       children: [
         Center(
@@ -25,14 +44,14 @@ class UICalendarDay extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.blue : Colors.transparent,
+              color: background,
             ),
             child: Center(
               child: Text(
                 day.day.toString(),
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
-                  fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                  color: color,
+                  fontWeight: fontWeight,
                 ),
               ),
             ),
@@ -41,7 +60,10 @@ class UICalendarDay extends StatelessWidget {
         FutureBuilder<int>(
           future: getEventCount(day),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return const SizedBox();
+            if (
+              !snapshot.hasData
+              || snapshot.data == 0
+            ) return const SizedBox();
             return Positioned(
               right: 2,
               bottom: 2,
@@ -50,7 +72,7 @@ class UICalendarDay extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                 child: Text(
                   snapshot.data.toString(),
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 )
               ),
             );
